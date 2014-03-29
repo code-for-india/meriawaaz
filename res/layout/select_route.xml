@@ -35,7 +35,13 @@
     android:text="Ok"
     android:width="89dp" />
             
- <fragment 
+<!--  <fragment 
+          android:id="@+id/map"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:name="com.google.android.gms.maps.SupportMapFragment"/> -->
+          
+ <fragment
           android:id="@+id/map"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
