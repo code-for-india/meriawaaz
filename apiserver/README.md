@@ -17,3 +17,14 @@ Start server:
 ```
 
 Goto http://localhost:9000
+
+### Open in Intellij
+```
+  $ ../play-2.2.2/play idea
+```
+Open IntelliJ Idea
+
+Open Project
+```
+/apiserver
+```
