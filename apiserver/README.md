@@ -23,6 +23,7 @@ Goto http://localhost:9000
   $ ../play-2.2.2/play idea
 ```
 Open IntelliJ Idea
+Follow instruction here to install Play plugin [https://www.jetbrains.com/idea/webhelp/play-framework.html](https://www.jetbrains.com/idea/webhelp/play-framework.html)
 
 Open Project
 ```
