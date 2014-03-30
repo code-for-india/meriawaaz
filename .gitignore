@@ -24,3 +24,6 @@ proguard/
 
 #idea files
 *.idea/
+
+#play files
+play-2.2.2/
