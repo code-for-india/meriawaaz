@@ -13,5 +13,7 @@ Unzip and place at root of project
 Start server:
 
 ```
-  $ ../play-2.2.2/play
+  $ ../play-2.2.2/play run
 ```
+
+Goto http://localhost:9000
