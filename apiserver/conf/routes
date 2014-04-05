@@ -4,7 +4,7 @@
 
 # Home page
 GET     /directions                 controllers.Application.directions(source : String, destination : String)
-POST    /reportIncident				controllers.Application.reportIncident()
+POST    /reportIncident				controllers.Application.reportIncident(location : String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

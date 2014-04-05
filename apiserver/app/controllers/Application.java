@@ -37,12 +37,12 @@ public class Application extends Controller {
       }
     
     @BodyParser.Of(BodyParser.Json.class)
-    public static Result reportIncident() {
+    public static Result reportIncident(String location) {
       JsonNode json = request().body().asJson();
-	   //   String name = json.findPath("name").textValue();
-    //  if(name == null) {
-      //  return badRequest("Missing parameter [name]");
-      //} else {
+	     String incident = json.findPath("incident").textValue();
+	     String datetime = json.findPath("datetime").textValue();
+	     String comment = json.findPath("comment").textValue();
+	     
         return ok("Hello " + json);
       }
     }
