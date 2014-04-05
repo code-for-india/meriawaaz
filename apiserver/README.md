@@ -1,3 +1,8 @@
+#SafeRoute APIs
+example get direction
+
+http://localhost:9000/directions?source=37.3909762,-122.0663274&destination=37.3909762,-122.0663274
+
 # API server
 
 ### Dependencies
