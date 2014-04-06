@@ -27,3 +27,7 @@ proguard/
 
 #play files
 play-2.2.2/
+
+#python files
+/pythonapiserver/myenvironment
+*.pyc
