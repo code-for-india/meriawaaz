@@ -6,7 +6,9 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'saferoute.views.home', name='home'),
+    #url(r'^$', 'routefinder.views.home', name='home'),
+    url(r'^directions/', 'routefinder.views.directions', name='home'),
+    url(r'^geocode/', 'routefinder.views.geocode', name='home'),
     # url(r'^saferoute/', include('saferoute.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
