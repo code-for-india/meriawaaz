@@ -1,4 +1,4 @@
-import simplejson
+from django.utils import simplejson
 import urllib
 import json
 from django.http import HttpResponse

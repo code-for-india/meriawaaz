@@ -1,0 +1,24 @@
+<!DOCTYPE html
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>{% block title %}Guestbook{% endblock %}</title>
+    <link type="text/css" rel="stylesheet" href="/media/main.css" />
+  </head>
+
+  <a href="/accounts/create_user/">Create User</a>
+  Hello
+  {% if user.is_authenticated %}
+    {{ user.username }}
+    [<a href="{% url django.contrib.auth.views.logout %}">sign out</a>]
+  {% else %}
+    World!
+    [<a href="{% url django.contrib.auth.views.login %}">sign in</a>]
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  <body>
+  </body>
+</html>
