@@ -89,7 +89,6 @@
                 google.maps.event.addListener(currentPositionMarker, 'click', function() {
                     infowindow.setContent("Current position: latitude: " + lat + " longitude: " + lon);
                     infowindow.open(map, currentPositionMarker);
-                    alert(currentPositionMarker.getDuration ().seconds);
                 });
               
             }
@@ -285,7 +284,7 @@
                             <div class="ui-bar-c ui-corner-all ui-shadow">
                                 <div   id="map_canvas"  ></div >
                               </div>
-                                <div id="results" style="display:none;">
+                                <div id="results">
                                     <div id="directions"></div>
                                 </div>
                          
@@ -299,3 +298,4 @@
 
     </body>
 </html>
+
