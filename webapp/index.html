@@ -1,0 +1,301 @@
+//works well
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Safe Route</title>
+        
+        <meta charset="utf-8" />
+         
+ 
+
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta http-equiv="content-language" content="en" />
+        <meta name="author" content="Johan Säll Larsson" />
+
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link type="text/css" rel="stylesheet" href="css/jquery-mobile-1.0/jquery.mobile.css" />
+        <!--<link type="text/css" rel="stylesheet" href="css/mobile.css" />-->
+        <script type="text/javascript" src="js/modernizr-2.0.6/modernizr.min.js"></script>
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script> 
+        <script type="text/javascript" src="js/jquery-1.7.1/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery-mobile-1.0/jquery.mobile.min.js"></script>
+        <!--<script type="text/javascript" src="js/jquery.ui-1.8.15/jquery.ui.autocomplete.min.js"></script>-->
+        <script type="text/javascript" src="js/demo.js"></script>
+        <script type="text/javascript" src="js/fullscreen.js"></script>
+        <script type="text/javascript" src="ui/jquery.ui.map.js"></script>
+        <!--<script type="text/javascript" src="ui/jquery.ui.map.services.js"></script>-->
+        <!--<script type="text/javascript" src="ui/jquery.ui.map.extensions.js"></script>-->
+    
+        <script type="text/javascript">
+
+            var mobileDemo = {'center': '57.7973333,12.0502107', 'zoom': 10};
+            var currentPosition;
+            ////////////////////////////////////////////////////////////
+
+            $('#basic_map').live('pageinit', function() {
+                demo.add('basic_map', function() {
+                    $('#map_canvas').gmap({'center': mobileDemo.center, 'zoom': mobileDemo.zoom, 'disableDefaultUI': true, 'callback': function() {
+                            initialize();
+                        }});
+                }).load('basic_map');
+            });
+            $(document).live("pagebeforeshow", "#map_page", function() {
+                navigator.geolocation.getCurrentPosition(locSuccess, locError);
+            });
+            function locSuccess(position) {
+                initialize(position.coords.latitude, position.coords.longitude);
+            }
+            function locError(error) {
+                // initialize map with a static predefined latitude, longitude
+
+                // initialize(59.3426606750, 18.0736160278);
+            }
+            $(document).on('click', '#submit', function(e) {
+                e.preventDefault();
+                calculateRoute();
+            });
+
+            var directionDisplay,
+                    directionsService = new google.maps.DirectionsService(),
+                    map;
+            function initialize(lat, lng)
+            {
+                
+    
+ 
+                directionsDisplay = new google.maps.DirectionsRenderer();
+                //var mapCenter = new google.maps.LatLng(59.3426606750, 18.0736160278);
+                currentPosition = new google.maps.LatLng(lat, lng);
+                var myOptions = {
+                    zoom: 17,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    center: currentPosition
+                }
+
+                map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+                directionsDisplay.setMap(map);
+                directionsDisplay.setPanel(document.getElementById("directions"));
+                var currentPositionMarker = new google.maps.Marker({
+                    position: currentPosition,
+                    map: map,
+                    title: "Current position"
+                });
+               new google.maps.places.Autocomplete( document.getElementById('from'));
+
+               new google.maps.places.Autocomplete( document.getElementById('to'));
+
+                var infowindow = new google.maps.InfoWindow(); 
+                google.maps.event.addListener(currentPositionMarker, 'click', function() {
+                    infowindow.setContent("Current position: latitude: " + lat + " longitude: " + lon);
+                    infowindow.open(map, currentPositionMarker);
+                });
+              
+            }
+            $(document).live("pagebeforeshow", "#map_page", function() {
+                navigator.geolocation.getCurrentPosition(locSuccess, locError);
+                
+            });
+            function locError(error) {
+                $("#from").attr("placeHolder", "Enter current location");
+                $("#map_canvas").css({height: $("#basic_map").height() /2.102 });
+            }
+
+            function locSuccess(position) {
+                $("#from").attr("placeHolder", "Found current location");
+                initialize(position.coords.latitude, position.coords.longitude);
+                $("#map_canvas").css({height: $("#basic_map").height() /2.102 });
+            }
+            function highLightTravelMode(travelMode) {
+                
+                  $("#DRIVING").css("border-bottom","" );
+                  $("#WALKING").css("border-bottom","" );
+                  $("#TRANSIT").css("border-bottom","" );
+                  $("#BICYCLING").css("border-bottom","" );
+                  $(travelMode).css("border-bottom","4px solid blue" );
+                
+            }
+            function calculateRoute(travelMode) {
+                if(typeof travelMode == 'undefined') {
+                    travelMode = "DRIVING";
+                }
+                highLightTravelMode("#"+travelMode);
+                var targetDestination = $("#to").val();
+
+                if (currentPosition == null || currentPosition == '' || $("#from").val() != '') {
+                    currentPosition = $("#from").val();
+                }
+                if (currentPosition && currentPosition != '' && targetDestination && targetDestination != '') {
+                    var request = {
+                        origin: currentPosition,
+                        destination: targetDestination,
+                        travelMode: google.maps.DirectionsTravelMode[travelMode]
+                    };
+
+                    directionsService.route(request, function(response, status) {
+                        if (status == google.maps.DirectionsStatus.OK) {
+                            directionsDisplay.setPanel(document.getElementById("directions"));
+                            directionsDisplay.setDirections(response);
+                            
+                            //$("#results").show();
+                        }
+                        else {
+                            $("#results").hide();
+                        }
+                    });
+                }
+                else {
+                    $("#results").hide();
+                }
+                
+              
+            }
+           
+            var tog = false;
+            function togglePlanPanel() {
+                if (!tog) {
+                    $("#planPanel").slideDown();
+                    $("#showspace").slideDown();
+//                    $("#from").slideUp();
+//                    $("#to").slideUp();
+//                    $("#submit").slideUp();
+                } else {
+                    $("#planPanel").slideUp();
+                    $("#showspace").slideUp();
+//                     $("#from").slideDown();
+//                    $("#to").slideDown();
+//                    $("#submit").slideDown();
+                }
+                 tog = !tog;
+                 
+            }
+
+
+
+        </script>
+         
+    </head>
+    <body>
+         
+            
+        <div id="home" data-role="page" data-theme="d">
+
+            <div data-role="content">					
+                <img id="topImg" src="images/ic_launcher.png" width="100" height="100" style="display: block; margin: 0 auto">
+                <ul data-role="listview" data-inset="true"  data-dividertheme="a"> 
+                    <li><a href="#basic_map">Take a safe route</a></li> 
+                    <li><a href="#basic_map">Report unsafe area</a></li> 
+                </ul>
+            </div>
+
+        </div>
+
+        <div id="basic_map" data-role="page">
+            <div data-role="header">
+                <div>
+                    <!-- a data-rel="back">Back</a -->
+                    <img src="images/ic_launcher.png" data-rel="back">
+                    <img src="images/plus.png" style="float:right">
+                </div>
+
+            </div>
+            <div data-role="content"  data-theme="d" id="mapScreenArea">
+                <div id="planPanel" style="display:none">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: center" id="DRIVING">
+                                <img src="images/car.jpg"  onclick="calculateRoute('DRIVING');"/>
+                            </td>
+                            <td style="text-align: center" id="TRANSIT">
+                                <img src="images/bus.jpg"  onclick="calculateRoute('TRANSIT');"/>
+                            </td>
+                            <td style="text-align: center;" id="WALKING">
+                                <img src="images/man.jpg"  onclick="calculateRoute('WALKING');"/>
+                            </td>
+                            <td style="text-align: center" id="BICYCLING">
+                                <img src="images/cycle.jpg"  onclick="calculateRoute('BICYCLING');"/>
+                            </td>                         
+                            
+                        </tr>
+                    </table>
+
+                    <br/>
+
+                    <table style="width:100%" >
+                        <tr>
+                            <td style="width:50%">
+                                Record your trip safety
+                            </td>
+                            <td style="width:20%">
+                                <select  data-role="slider" id="toggle1" >
+                                    <option value="off">Off</option>
+                                    <option value="on">On</option>
+                                </select> 
+                            </td>
+                        </tr>
+                    </table>
+                    <br/>
+
+                    <table style="width:100%" >
+                        <tr>
+                            <td style="width:50%">
+                                Show unsafe areas
+                            </td>
+                            <td style="width:20%">
+                                <select  data-role="slider" id="toggle2" >
+                                    <option value="off">Off</option>
+                                    <option value="on">On</option>
+                                </select> 
+                            </td>
+                        </tr>
+                    </table>
+                     <table style="width:100%;padding-top: 10px" >
+                        <tr>
+                            <td style="width:50%">
+                                Route type
+                            </td>
+                            <td style="width:20%">
+                                <select  data-role="slider" id="toggle3" data-theme="c" data-track-theme="b">
+                                    <option value="time">Time</option>
+                                    <option value="safe">Safe</option>
+                                </select> 
+                             </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="showspace" style="display:none"><br/><br/></div>
+                <div >
+                    <ul data-role="listview" >
+                        <image src="images/handle.png" id="handle" onclick="togglePlanPanel();" width="100%" height="13px"/>
+                        <li >
+                            <input placeholder="Current location" name="from" id="from" />
+                        </li>
+                        <li >
+                            <input placeholder="Enter destination" name="to" id="to" />
+                        </li>
+
+                        <a data-icon="search" style="height: 30px" data-role="button" href="#" id="submit">Get directions</a>
+
+                    </ul>
+
+                </div>
+                <br/>
+                
+                            <div class="ui-bar-c ui-corner-all ui-shadow">
+                                <div   id="map_canvas"  ></div >
+                              </div>
+                                <div id="results">
+                                    <div id="directions"></div>
+                                </div>
+                         
+            </div>
+            
+        </div>
+
+    
+
+
+
+    </body>
+</html>
+
