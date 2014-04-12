@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="lib/jquery-1.6.4.js"></script>
+        <script src="lib/jquery.mobile-1.1.0.js"></script>
+        <link href="src/css/jquery.mobile.structure-1.1.0.css" rel="stylesheet">
+        <link href="src/css/jquery.mobile.theme-1.1.0.css" rel="stylesheet">
+    </head>
+    <body>
+        <div >
+            <div data-role="header" data-theme="a" >
+                <div>
+                   <div style="display:block">
+                    <img src="images/ic_launcher.png">
+                    <label>SafeRoute</label>
+                    </div>
+                    <img src="images/plus.png" style="float:right">
+                </div>
+            </div>
+            <div data-role="content">
+                <ul data-role="listview" >
+                <li >
+                    <label for="textarea2">From:</label>
+                <input name="from" id="from" style="height:10px"></input>
+                </li>
+                <li >
+                    <label for="textarea2">To:</label>
+                <input name="to" id="to" style="height:10px"></input>
+                </li>
+               </ul>
+                
+            </div>
+            <div data-role="footer" data-position="fixed" data-theme="a">
+                <h3> TODO: Destination </h3>
+                <!-- span > 
+                <select data-role="slider" id="toggle" >
+                    <option value="off">Time</option>
+                    <option value="on">Safe</option>
+                </select>
+                </span -->
+            </div>
+        </div>
+    </body>
+</html>
