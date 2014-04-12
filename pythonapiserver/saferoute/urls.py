@@ -15,6 +15,5 @@ urlpatterns = patterns('',
         {'next_page': '/guestbook/',}),
 
 
-    url(r'^directions/', 'routefinder.views.directions', name='directions'),
-    url(r'^geocode/', 'routefinder.views.geocode', name='directions'),
+    url(r'^directions', 'routefinder.views.directions'),
 )
