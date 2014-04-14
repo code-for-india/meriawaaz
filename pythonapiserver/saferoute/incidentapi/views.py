@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 from models import Incident, IncidentManager
 from django.core import serializers
+from django.core.exceptions import FieldError
 
 @csrf_exempt
 def incidents_handler(request):
@@ -27,6 +28,24 @@ def incidents_handler(request):
     else:
       return HttpResponseBadRequest('Request content is not application/json.')
   
+  else:
+    return HttpResponseBadRequest('This method is not supported.')
+
+
+@csrf_exempt
+def incident_query_handler(request):
+  if request.method == 'GET':
+    param_dict = {}
+    mod_incidents = []
+    for key,val in request.GET.items():
+      param_dict[key] = val
+    try:
+      incidents = Incident.objects.filter(**param_dict)
+      for item in incidents:
+        mod_incidents.append(item.to_dict())
+      return HttpResponse(json.dumps(mod_incidents), content_type="application/json")    
+    except FieldError:
+      return HttpResponseBadRequest('Unsupported query parameters.')  
   else:
     return HttpResponseBadRequest('This method is not supported.')
 
