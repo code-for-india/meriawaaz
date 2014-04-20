@@ -1,14 +1,17 @@
 import urllib
 import json
 from django.http import HttpResponse
+from incidentapi.controllers import get_incidents_near_location
 
 
-'''
-    Methods to find route and populate with warnings
-'''
+"""
+    Methods to find route and populate with warnings.
+"""
 
 DIRECTION_BASE_URL = 'http://maps.googleapis.com/maps/api/directions/json?sensor=false&alternatives=true'
 
+# Set default proximity to 1km.
+DEFAULT_PROXIMITY = 500
 
 def directions(request):
     #TODE: remove default coordinates later
@@ -46,16 +49,23 @@ def modify_result(html):
 
         #for each step append to step_risks and add to total risk of route
         step_risks = []
+        step_incidents = []
         for step in steps:
             avg_loc = average_out_path(step["start_location"]["lat"], step["start_location"]["lng"],
                         step["end_location"]["lat"], step["end_location"]["lng"])
+            mod_incidents = []
+            incidents = get_incidents_near_location(avg_loc[0], avg_loc[1], DEFAULT_PROXIMITY)
+            for incident in incidents:
+                mod_incidents.append(incident.to_dict())
             step_risk = find_risk(avg_loc)
             step_risks.append({"lat": avg_loc[0], "lng": avg_loc[1], "risk": step_risk})
+            step_incidents.append({"lat": avg_loc[0], "lng": avg_loc[1], "incidents": mod_incidents})
             total_route_risk += step_risk
 
         #populate route risk with total risk of its steps and risk breakdown
         route_risk["total_risk"] = total_route_risk
         route_risk["risk_breakdown"] = step_risks
+        route_risk["risk_incidents"] = step_incidents
 
         #for each route append to route risks at root level
         route_risks.append(route_risk)
