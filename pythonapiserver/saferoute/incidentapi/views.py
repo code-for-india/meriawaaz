@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from models import Incident, IncidentManager
 from django.core import serializers
 from django.core.exceptions import FieldError
+from controllers import get_incidents_near_location
 
 @csrf_exempt
 def incidents_handler(request):
@@ -45,7 +46,33 @@ def incident_query_handler(request):
         mod_incidents.append(item.to_dict())
       return HttpResponse(json.dumps(mod_incidents), content_type="application/json")    
     except FieldError:
-      return HttpResponseBadRequest('Unsupported query parameters.')  
+      return HttpResponseBadRequest('Unsupported query parameters.')
+  else:
+    return HttpResponseBadRequest('This method is not supported.')
+
+
+@csrf_exempt
+def incident_proximity_handler(request):
+  if request.method == 'GET':
+    param_dict = {}
+    mod_incidents = []
+    for key,val in request.GET.items():
+      param_dict[key] = val
+    try:
+      if "latitude" in request.GET.keys() and "longitude" in request.GET.keys():
+        lat = float(request.GET["latitude"])
+        lng = float(request.GET["longitude"])
+        radius = int(request.GET["radius"])
+        if radius:
+          incidents = get_incidents_near_location(lat, lng, radius)
+        else:
+          incidents = get_incidents_near_location(lat, lng)
+        for item in incidents:
+          mod_incidents.append(item.to_dict())
+        print len(mod_incidents)
+      return HttpResponse(json.dumps(mod_incidents), content_type="application/json")
+    except FieldError:
+      return HttpResponseBadRequest('Unsupported query parameters.')
   else:
     return HttpResponseBadRequest('This method is not supported.')
 

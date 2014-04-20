@@ -1,6 +1,7 @@
 from django.db import models
 import calendar
 import helpers
+from django_mongodb_engine.contrib import MongoDBManager
 
 """
   Factory method to load incidents.
@@ -48,7 +49,8 @@ class Incident(models.Model):
   updated_at = models.DateTimeField(auto_now=True)
   
   # Incident manager for special access.
-  objects = IncidentManager()
+  # objects = IncidentManager()
+  objects = MongoDBManager()
 
   def __unicode__(self):
     return "%s, %s" % (self.uid, self.location)

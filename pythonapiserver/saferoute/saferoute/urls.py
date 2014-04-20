@@ -16,5 +16,6 @@ urlpatterns = patterns('',
   #Incident API
   url(r'^v%s/incidents$' % API_VERSION, 'incidentapi.views.incidents_handler'),
   url(r'^v%s/incidents/query$' % API_VERSION, 'incidentapi.views.incident_query_handler'),
+  url(r'^v%s/incidents/proximity$' % API_VERSION, 'incidentapi.views.incident_proximity_handler'),
   url(r'^v%s/incidents/(?P<incident_id>.+?)$' % API_VERSION, 'incidentapi.views.incident_handler'),
 )
