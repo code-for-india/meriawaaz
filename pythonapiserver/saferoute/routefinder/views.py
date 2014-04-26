@@ -13,13 +13,15 @@ DIRECTION_BASE_URL = 'http://maps.googleapis.com/maps/api/directions/json?sensor
 # Set default proximity to 1km.
 DEFAULT_PROXIMITY = 500
 
+
 def directions(request):
-    #TODE: remove default coordinates later
-    origin = request.GET.get('origin', "37.3909762,-122.0663274")
-    destination = request.GET.get('destination', "37.4909762,-122.0663274")
+    origin = request.GET.get('origin')
+    destination = request.GET.get('destination')
     result = get_directions_from_google(origin, destination)
-    result = modify_result(result.read())
-    return HttpResponse(json.dumps(result), content_type="application/json")
+    result = add_risk_element_to_result(result.read())
+    response = HttpResponse(json.dumps(result), content_type="application/json")
+    response['Access-Control-Allow-Origin'] = '*'
+    return response
 
 
 def get_directions_from_google(origin, destination, **geo_args):
@@ -32,7 +34,7 @@ def get_directions_from_google(origin, destination, **geo_args):
     return urllib.urlopen(url)
 
 
-def modify_result(html):
+def add_risk_element_to_result(html):
     complete_response = json.loads(html)
     routes = complete_response["routes"]
 
@@ -52,7 +54,7 @@ def modify_result(html):
         step_incidents = []
         for step in steps:
             avg_loc = average_out_path(step["start_location"]["lat"], step["start_location"]["lng"],
-                        step["end_location"]["lat"], step["end_location"]["lng"])
+                                       step["end_location"]["lat"], step["end_location"]["lng"])
             mod_incidents = []
             incidents = get_incidents_near_location(avg_loc[0], avg_loc[1], DEFAULT_PROXIMITY)
             for incident in incidents:

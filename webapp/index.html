@@ -327,6 +327,7 @@
                         travelMode: google.maps.DirectionsTravelMode[travelMode]
                     };
 
+
                     directionsService.route(request, function(response, status) {
                         if (status == google.maps.DirectionsStatus.OK) {
                             directionsDisplay.setPanel(document.getElementById("directions"));
@@ -338,6 +339,21 @@
                             $("#results").hide();
                         }
                     });
+
+                    //function added by Ishita
+                    $.get("http://localhost:8000/directions", request, function(response) { 
+                            console.log(request);
+                            //TODO: use this risk array to draw circles 
+                            risks = response.risks;
+                            delete response.risks;
+                            //Tb element is expected to render using directionsDisplay
+                            response.Tb = request;
+                            //TODO: remove above function using google direction service and 
+                            //render response from above line instead
+                            //directionsDisplay.setPanel(document.getElementById("directions"));
+                            //directionsDisplay.setDirections(response);
+                            console.log(response);
+                        });
                 }
                 else {
                     $("#results").hide();
