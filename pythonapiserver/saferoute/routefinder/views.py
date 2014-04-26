@@ -57,7 +57,7 @@ def modify_result(html):
             incidents = get_incidents_near_location(avg_loc[0], avg_loc[1], DEFAULT_PROXIMITY)
             for incident in incidents:
                 mod_incidents.append(incident.to_dict())
-            step_risk = find_risk(avg_loc)
+            step_risk = len(incidents)
             step_risks.append({"lat": avg_loc[0], "lng": avg_loc[1], "risk": step_risk})
             step_incidents.append({"lat": avg_loc[0], "lng": avg_loc[1], "incidents": mod_incidents})
             total_route_risk += step_risk
@@ -78,8 +78,3 @@ def modify_result(html):
 def average_out_path(start_lat, start_lng, end_lat, end_lng):
     #for now we assume paths are mostly straight and use it's linear mean
     return [(start_lat + end_lat)/2, (start_lng + end_lng)/2]
-
-
-def find_risk(loc):
-    #TOD0: add database call
-    return 200
