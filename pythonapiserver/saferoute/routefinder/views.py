@@ -19,7 +19,9 @@ def directions(request):
     destination = request.GET.get('destination', "37.4909762,-122.0663274")
     result = get_directions_from_google(origin, destination)
     result = modify_result(result.read())
-    return HttpResponse(json.dumps(result), content_type="application/json")
+    response = HttpResponse(json.dumps(result), content_type="application/json")
+    response['Access-Control-Allow-Origin'] = "*"
+    return response
 
 
 def get_directions_from_google(origin, destination, **geo_args):
