@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
-
+from django.conf.urls.static import static
 from django.contrib import admin
+from django.conf import settings
 admin.autodiscover()
 
 API_VERSION = 0
@@ -18,5 +19,11 @@ urlpatterns = patterns('',
   url(r'^v%s/incidents/(?P<incident_id>.+?)$' % API_VERSION, 'incidentapi.views.incident_handler'),
 
   # Webapp urls
-  url(r'^/$', 'webapp.views.home', name='home'),
+  url(r'^$', 'webapp.views.home', name='home'),
+)
+
+urlpatterns += patterns('',
+  url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
+    'document_root': '/static',
+  }),
 )
