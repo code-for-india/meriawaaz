@@ -22,8 +22,9 @@ urlpatterns = patterns('',
   url(r'^$', 'webapp.views.home', name='home'),
 )
 
-urlpatterns += patterns('',
-  url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {
-    'document_root': '/static',
-  }),
-)
+if settings.DEBUG:
+  urlpatterns += patterns('',
+    url(r'^/static/(?P<path>.*)$', 'django.views.static.serve', {
+      'document_root': '/static',
+    }),
+  )
