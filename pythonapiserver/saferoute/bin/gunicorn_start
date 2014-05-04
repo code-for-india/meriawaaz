@@ -1,27 +1,26 @@
 #!/bin/bash
- 
+
 NAME="saferoute"                                  # Name of the application
-DJANGODIR=/root/safe-route/pythonapiserver/saferoute           # Django project directory
-SOCKFILE=/root/safe-route/pythonapiserver/saferoute/run/gunicorn.sock  # we will communicte using this unix socket
+DJANGODIR=/home/rohit/saferoute/safe-route/pythonapiserver/saferoute/           # Django project directory
 NUM_WORKERS=3                                     # how many worker processes should Gunicorn spawn
 DJANGO_SETTINGS_MODULE=saferoute.settings             # which settings file should Django use
 DJANGO_WSGI_MODULE=saferoute.wsgi                     # WSGI module name
- 
+
 echo "Starting $NAME as `whoami`"
- 
+
 # Activate the virtual environment
 cd $DJANGODIR
 source ../myenvironment/bin/activate
 export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
 export PYTHONPATH=$DJANGODIR:$PYTHONPATH
- 
+
 # Create the run directory if it doesn't exist
 RUNDIR=$(dirname $SOCKFILE)
 test -d $RUNDIR || mkdir -p $RUNDIR
- 
+
 # Start your Django Unicorn
 # Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)
 exec gunicorn ${DJANGO_WSGI_MODULE}:application \
   --workers $NUM_WORKERS \
   --log-level=debug \
-  --bind=23.253.74.155:8000
+  --bind=127.0.0.1:8000
