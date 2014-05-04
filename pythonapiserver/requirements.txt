@@ -1,8 +1,11 @@
-git+https://github.com/django-nonrel/django@nonrel-1.5
-git+https://github.com/django-nonrel/djangotoolbox
-git+https://github.com/django-nonrel/mongodb-engine
+Django==1.5.5
+beautifulsoup4==4.3.2
+django-mongodb-engine==0.5.1
+djangotoolbox==1.6.2
 google-api-python-client==1.2
 httplib2==0.8
+pygeocoder==1.2.4
+pymongo==2.7
 requests==2.2.1
 simplejson==3.4.0
 wsgiref==0.1.2
