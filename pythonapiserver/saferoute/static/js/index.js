@@ -371,7 +371,7 @@ function plotSafeRoute(origin, targetDestination, routeType) {
             }
             //alert("http://23.253.74.155/directions?origin="+origin+"&destination="+destination);
             //Get the JSON messages by sending lat, lng
-            var route = "http://localhost:8000/directions?origin="+originlatLng+"&destination="+targetlatLng;
+            var route = "/directions?origin="+originlatLng+"&destination="+targetlatLng;
             $.get(route, function(data) {
                 points = parseRoute(data, routeType); 
                 
