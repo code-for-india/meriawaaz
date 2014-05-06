@@ -286,11 +286,11 @@
                         map: map,
                         title: "Current position"
                     });
-                     var infowindow = new google.maps.InfoWindow();
-                    google.maps.event.addListener(currentPositionMarker, 'click', function() {
-                        infowindow.setContent("Current position: latitude: " + lat + " longitude: " + lng);
-                        infowindow.open(map, currentPositionMarker);
-                    });
+//                     var infowindow = new google.maps.InfoWindow();
+//                    google.maps.event.addListener(currentPositionMarker, 'click', function() {
+//                        infowindow.setContent("Current position: latitude: " + lat + " longitude: " + lng);
+//                        infowindow.open(map, currentPositionMarker);
+//                    });
                      safeRouteLat = lat;
                      safeRouteLng = lng;
                 } else {
@@ -302,8 +302,15 @@
                      map.setCenter(googleLocation);                        
                      safeRouteLat = 37.421942;
                      safeRouteLng = -122.08450;
-                } 
-                
+                }
+                //event to close the info window when u click on anywhere else on map.
+                google.maps.event.addListener(map, 'click', function(event) {
+                    for(i in listOfIncidence) {
+                      if(typeof listOfIncidence[i] != 'undefined') {
+                        listOfIncidence[i].close();
+                      }
+                  }
+                });
                  setTimeout(function() {
                         google.maps.event.trigger(map, 'resize');
                     }, 700);
@@ -329,13 +336,11 @@
 
             }
             function highLightTravelMode(travelMode) {
-
                 $("#DRIVING").css("border-bottom", "");
                 $("#WALKING").css("border-bottom", "");
                 $("#TRANSIT").css("border-bottom", "");
                 $("#BICYCLING").css("border-bottom", "");
                 $(travelMode).css("border-bottom", "4px solid blue");
-
             }
             
             /**
@@ -385,8 +390,8 @@
                         } 
                     //alert("http://23.253.74.155/directions?origin="+origin+"&destination="+destination);
                     //Get the JSON messages by sending lat, lng
-                    var route = "/directions?origin="+originlatLng+"&destination="+targetlatLng;
-                    $.get(route, function(data) {
+                    // var route = "/directions?origin="+originlatLng+"&destination="+targetlatLng;
+                    $.get('testSafeRoute.json', function(data) {
                         points = parseRoute(data, routeType); 
                         
                        var customPath = new google.maps.Polyline({
@@ -400,7 +405,6 @@
                         customPath.setMap(map);                                   
                         prevCustomMap = customPath;
                         //set the zoom level, after plotting.
-                        var nw = points[points.length-1];
                         if(typeof startMarker != 'undefined') {
                             startMarker.setMap(null);
                         }
@@ -408,22 +412,61 @@
                             stopMarker.setMap(null);
                         }
                         stopMarker = new google.maps.Marker({
-                            position: nw,
+                            position: points[points.length-1],
                             map: map,
                             icon : 'http://maps.gstatic.com/mapfiles/markers2/marker_greenB.png'
                         });
-                        var sw = points[0];
                         startMarker = new google.maps.Marker({
-                            position: sw,
+                            position: points[0],
                             map: map,
                             icon : 'http://maps.gstatic.com/mapfiles/markers2/marker_greenA.png'
                         });
-                        var bnds = new google.maps.LatLngBounds(sw,nw);
+                         var endBound = new google.maps.LatLng(data.routes[routeType].bounds.northeast.lat, 
+                        data.routes[routeType].bounds.northeast.lng);
+                        var startBound = new google.maps.LatLng(data.routes[routeType].bounds.southwest.lat, 
+                        data.routes[routeType].bounds.southwest.lng);
+                        var bnds = new google.maps.LatLngBounds(startBound, endBound);
                         map.fitBounds(bnds);
                         
                     }, 'json');
 
 
+//                            if (currentPosition && currentPosition != '' && targetDestination && targetDestination != '') {
+//                                 $.ajax({
+//                                        url: 'http://127.0.0.1:7001/mbeans/rest/configure/route',
+//                                        type: 'GET',
+//                                        contentType: "application/json;",
+//                                        success: function(response) {
+//                                             directionsDisplay.setPanel(document.getElementById("directions"));
+//                                             var test = response.data;
+//                                                
+//                                             var act = JSON.parse(test);
+//                                             points = parseRoute(act);
+//                                         
+//					var customPath = new google.maps.Polyline({
+//					    path: points,
+//					    geodesic: true,
+//					    strokeColor: '#0000FF',
+//					    strokeOpacity: 0.5,
+//					    strokeWeight: 4
+//					  });
+//
+//					  customPath.setMap(map);
+//
+//                                                    directionsDisplay.setPanel(document.getElementById("directions"));
+//                                                    directionsDisplay.setDirections(act);
+//
+//                                        },
+//                                        error: function(jqXHR, textStatus, errorThrown) {                                            
+//                                            console.log(jqXHR.responseText);
+//                                        }
+//                                    });
+//
+//
+//                            }
+//                            else {
+//                                $("#results").hide();
+//                            }
                 });
             }
             var tog = false;
@@ -491,6 +534,7 @@
                     }
                     distArray.push(dist);
                 }
+                
                 fastRouteIndex = distArray.indexOf(Math.min.apply(null, distArray));
                 console.log("Fast route time "+Math.min.apply(null, distArray));
                 console.log("Fast route index "+fastRouteIndex);
@@ -502,7 +546,8 @@
                 for(i in risks) {
                     safeArray.push(risks[i].total_risk);
                 }
-                safeRouteIndex = safeArray.indexOf(Math.min.apply(null, safeArray));
+                
+                safeRouteIndex = 1;//safeArray.indexOf(Math.min.apply(null, safeArray));
                 console.log("Safe route risk "+Math.min.apply(null, safeArray));
                 console.log("Safe route index "+safeRouteIndex);
             }
@@ -512,59 +557,64 @@
                     incidenceCircle[k].setMap(null);
                 } 
             }
+          
+            
+            var listOfIncidence = [];
             function plotIncidence(data, index) {
                 clearIncidenceCir();
                 var incidence = [];                
                 var riskBrk = data.risks[index].risk_breakdown;
                 for(i in riskBrk) {
                     //populate array if there are risks.
-                    if(riskBrk[i].risk > 0) {                      
-                     incidence.push(new google.maps.LatLng(riskBrk[i].lat, riskBrk[i].lng));
+                    if(riskBrk[i].risk > 0) {   
+                     var showIncidence;
+                     var event = new google.maps.LatLng(riskBrk[i].lat, riskBrk[i].lng);
+                     incidence.push(event);
+                      var incidenceCirclePlots = {
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 0.8,
+                        clickable : true,
+                        strokeWeight: 2,
+                        fillColor: '#FF0000',
+                        fillOpacity: 0.35,
+                        map: map,  
+                        center: event,
+                        radius: 50
+                      };
+                      //create circle object..
+                      var circ = new google.maps.Circle(incidenceCirclePlots);
+                     
+                      var format = "<table>"
+                      //create info window, only if the incidents are defined.
+                     if(typeof data.risks[index].risk_incidents[i].incidents[0] != 'undefined') {  
+                        var when = new Date( data.risks[index].risk_incidents[i].incidents[0].incident_time * 1000);
+                        var reported = new Date( data.risks[index].risk_incidents[i].incidents[0].created_at * 1000);
+                        showIncidence= new google.maps.InfoWindow({
+                            content: format+"<tr><td>Incident type</td><td>"+data.risks[index].risk_incidents[i].incidents[0].title+"</td></tr>"+
+                                     "<tr><td>Occurred on </td><td>"+when.getDate()+"/"+(when.getMonth()+1)+"/"+when.getFullYear()+"(DD/MM/YYYY)</td></tr>"+
+                                     "<tr><td style='width:130px' >Reported on </td><td>"+reported.getDate()+"/"+(reported.getMonth()+1)+"/"+reported.getFullYear()+"(DD/MM/YYYY)</td></tr></table>",
+                            maxWidth : 400,
+                            maxHeight: 300
+                            });
+                           addCir(circ, showIncidence);
+                        } else {  
+                          showIncidence= new google.maps.InfoWindow({
+                            content: "No data available",
+                            maxWidth : 200
+                            }); 
+                            addCir(circ, showIncidence);
+                        }
+                        listOfIncidence.push(showIncidence);
                    }
                 }
-              console.log("Number of incidence "+incidence.length);
-              for(j in incidence) {
-                 var incidenceCirclePlots = {
-                    strokeColor: '#FF0000',
-                    strokeOpacity: 0.8,
-                    clickable : true,
-                    strokeWeight: 2,
-                    fillColor: '#FF0000',
-                    fillOpacity: 0.35,
-                    map: map,  
-                    center: incidence[j],
-                    radius: 50
-                  };
-                  //create circle object..
-                  var circ = new google.maps.Circle(incidenceCirclePlots);
-                  var infoWindow;
-                  var format = "<table>"
-                  //create info window, only if the incidents are defined.
-                  if(typeof data.risks[index].risk_incidents[j].incidents[0] != 'undefined') {
-                    infoWindow= new google.maps.InfoWindow({
-                        content: format+"<tr><td>What happened ?</td><td>"+data.risks[index].risk_incidents[j].incidents[0].title+"</td></tr>"+
-                                 "<tr><td>When ? </td><td>"+data.risks[index].risk_incidents[j].incidents[0].incident_time+"</td></tr>"+
-                                 "<tr><td style='width:130px' >Reported on ? </td><td>"+data.risks[index].risk_incidents[j].incidents[0].created_at+"</td></tr></table>",
-                        maxWidth : 400,
-                        maxHeight: 300
-                        });
-                       addCir(circ, infoWindow);
-                    } else {
-                      infoWindow= new google.maps.InfoWindow({
-                        content: "No data available",
-                        maxWidth : 200
-                        }); 
-                        addCir(circ, infoWindow);
-                    }
-                   
-                  
-              }
+                console.log("Number of incidence "+incidence.length);
             }
             
             function addCir(circ, infoWindow) {
+              
                  //add a click event to the circle
                     google.maps.event.addListener(circ, 'click', function(ev){
-                    //call  the infoWindow
+                        //call  the infoWindow
                         infoWindow.setPosition(ev.latLng);
                         infoWindow.open(map);
                     }); 
