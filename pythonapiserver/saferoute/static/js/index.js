@@ -390,8 +390,8 @@
                         } 
                     //alert("http://23.253.74.155/directions?origin="+origin+"&destination="+destination);
                     //Get the JSON messages by sending lat, lng
-                    // var route = "/directions?origin="+originlatLng+"&destination="+targetlatLng;
-                    $.get('testSafeRoute.json', function(data) {
+                    var route = "/directions?origin="+originlatLng+"&destination="+targetlatLng;
+                    $.get(route, function(data) {
                         points = parseRoute(data, routeType); 
                         
                        var customPath = new google.maps.Polyline({
@@ -547,7 +547,7 @@
                     safeArray.push(risks[i].total_risk);
                 }
                 
-                safeRouteIndex = safeArray.indexOf(Math.min.apply(null, safeArray));
+                safeRouteIndex = safeArray.indexOf(Math.min.apply(null, safeArray)); 
                 console.log("Safe route risk "+Math.min.apply(null, safeArray));
                 console.log("Safe route index "+safeRouteIndex);
             }
