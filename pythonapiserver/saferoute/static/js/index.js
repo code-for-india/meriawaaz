@@ -547,7 +547,7 @@
                     safeArray.push(risks[i].total_risk);
                 }
                 
-                safeRouteIndex = 1;//safeArray.indexOf(Math.min.apply(null, safeArray));
+                safeRouteIndex = safeArray.indexOf(Math.min.apply(null, safeArray));
                 console.log("Safe route risk "+Math.min.apply(null, safeArray));
                 console.log("Safe route index "+safeRouteIndex);
             }
