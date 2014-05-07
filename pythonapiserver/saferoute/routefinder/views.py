@@ -17,20 +17,23 @@ DEFAULT_PROXIMITY = 500
 def directions(request):
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
-    result = get_directions_from_google(origin, destination)
+    mode = request.GET.get('mode', '')
+    result = get_directions_from_google(origin, destination, mode)
     result = add_risk_element_to_result(result.read())
     response = HttpResponse(json.dumps(result), content_type="application/json")
     response['Access-Control-Allow-Origin'] = '*'
     return response
 
 
-def get_directions_from_google(origin, destination, **geo_args):
+def get_directions_from_google(origin, destination, mode, **geo_args):
     geo_args.update({
         'origin': origin,
         'destination': destination
     })
-
-    url = DIRECTION_BASE_URL + '&' + urllib.urlencode(geo_args)
+    if mode:
+        url = DIRECTION_BASE_URL + '&mode=' + mode + '&' + urllib.urlencode(geo_args)
+    else:
+        url = DIRECTION_BASE_URL + '&' + urllib.urlencode(geo_args)
     return urllib.urlopen(url)
 
 

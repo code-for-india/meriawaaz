@@ -381,16 +381,15 @@
               */
           var prevCustomMap, startMarker, stopMarker;
           function plotSafeRoute(origin, targetDestination, routeType) {
-                geoCode(targetDestination, function(latLng) {
-                    destination = latLng;
+                geoCode(targetDestination, function(targetlatLng) {
                     
                     if(typeof prevCustomMap != 'undefined') {
-                             //erase previous map.
-                             prevCustomMap.setMap(null);
-                        } 
+                        //erase previous map.
+                        prevCustomMap.setMap(null);
+                    } 
                     //alert("http://23.253.74.155/directions?origin="+origin+"&destination="+destination);
                     //Get the JSON messages by sending lat, lng
-                    var route = "/directions?origin="+originlatLng+"&destination="+targetlatLng;
+                    var route = "/directions?origin="+origin+"&destination="+targetlatLng;
                     $.get(route, function(data) {
                         points = parseRoute(data, routeType); 
                         
