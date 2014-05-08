@@ -10,7 +10,7 @@
 
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta http-equiv="content-language" content="en" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="viewport" content="width=device-width, minimal-ui">
         <link type="text/css" rel="stylesheet" href="/static/third_party/css/jquery-mobile-1.0/jquery.mobile.css" />
         <link type="text/css" rel="stylesheet" href="/static/third_party/css/jquery-mobile-1.0/jquery.datetimepicker.css" />
         <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script> 
@@ -68,13 +68,13 @@
                     <table style="width:100%">
                         <tr>
                             <td style="text-align: center" id="DRIVING">
-                                <img src="images/car.jpg"  onclick="calculateRoute('DRIVING', 1);"/>
+                                <img src="images/car.jpg"  onclick="calculateRoute('driving', 1);"/>
                             </td>
                             <td style="text-align: center" id="TRANSIT">
                                 <img src="images/bus.jpg"  onclick="calculateRoute('TRANSIT', 1);"/>
                             </td>
                             <td style="text-align: center;" id="WALKING">
-                                <img src="images/man.jpg"  onclick="calculateRoute('WALKING', 1);"/>
+                                <img src="images/man.jpg"  onclick="calculateRoute('walking', 1);"/>
                             </td>
                             <td style="text-align: center" id="BICYCLING">
                                 <img src="images/cycle.jpg"  onclick="calculateRoute('BICYCLING', 1);"/>
@@ -172,7 +172,7 @@
                 <span style="float: left">
                     <table>
                         <tr>
-                            <td><img src="images/ic_launcher.png" onclick="javascript:history.back();"/></td>
+                            <td><img src="images/ic_launcher.png" onclick="window.location = '#report_page'"/></td>
                             <td> <span style="font-size:20px;">Submit a Report</span></td>
                         </tr>
                     </table> 
@@ -212,7 +212,7 @@
                 <span style="float: left">
                     <table>
                         <tr>
-                            <td><img src="static/images/logo_extrasmall.png" onclick="javascript:history.back();"/></td>
+                            <td><img src="static/images/logo_extrasmall.png" onclick="window.location = '#home'"/></td>
                             <td> <span style="font-size:20px;">Create a Report</span></td>
                         </tr>
                     </table> 

@@ -319,12 +319,12 @@
                     currentPosition = $("#from").val();
                     geoCode(currentPosition, function(latLng) {
                         origin = latLng;
-                        plotSafeRoute(origin, targetDestination, routeType);
+                        plotSafeRoute(origin, targetDestination, routeType, travelMode);
 
                     });
                 } else {
                     origin = safeRouteLat + "," + safeRouteLng;
-                    plotSafeRoute(origin, targetDestination, routeType);
+                    plotSafeRoute(origin, targetDestination, routeType, travelMode);
                 }
 
 
@@ -337,7 +337,7 @@
              * @returns {undefined}
              */
             var prevCustomMap, startMarker, stopMarker;
-            function plotSafeRoute(origin, targetDestination, routeType) {
+            function plotSafeRoute(origin, targetDestination, routeType, travelMode) {
                 geoCode(targetDestination, function(targetlatLng) {
                     
                     if (typeof prevCustomMap != 'undefined') {
@@ -345,7 +345,7 @@
                         prevCustomMap.setMap(null);
                     }
                     //Get the JSON messages by sending lat, lng
-                    var route = "/directions?origin="+origin+"&destination="+targetlatLng;
+                    var route = "/directions?origin="+origin+"&destination="+targetlatLng+"mode="+travelMode;
                     $.get(route, function(data) {
                         points = parseRoute(data, routeType);
 
@@ -466,8 +466,7 @@
                     safeArray.push(risks[i].total_risk);
                 }
 
-                safeRouteIndex = 1;//safeArray.indexOf(Math.min.apply(null, safeArray));
-                console.log("Safe route risk " + Math.min.apply(null, safeArray));
+                safeRouteIndex = safeArray.indexOf(Math.min.apply(null, safeArray));
                 console.log("Safe route index " + safeRouteIndex);
             }
             var incidenceCircle = [];
