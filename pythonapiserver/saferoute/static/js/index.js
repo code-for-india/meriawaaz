@@ -2,7 +2,7 @@
  * Webapp frontend JS.
  */
 
-      var mobileDemo = {'center': '57.7973333,12.0502107', 'zoom': 10};
+     var mobileDemo = {'center': '57.7973333,12.0502107', 'zoom': 10};
             var currentPosition;
             //Fallback location if geo is disabled.
             var googleLocation = new google.maps.LatLng(37.421942, -122.08450);
@@ -293,8 +293,8 @@
 
             }
             function highLightTravelMode(travelMode) {
-                $("#DRIVING").css("border-bottom", "");
-                $("#WALKING").css("border-bottom", "");
+                $("#driving").css("border-bottom", "");
+                $("#walking").css("border-bottom", "");
                 $("#TRANSIT").css("border-bottom", "");
                 $("#BICYCLING").css("border-bottom", "");
                 $(travelMode).css("border-bottom", "4px solid blue");
@@ -305,26 +305,36 @@
              * @param {type} data
              * @returns {undefined}
              */
-            function calculateRoute(travelMode, routeType) {
+            function calculateRoute() {
                 var origin, destination;
+                //select the travel mode and route type.
                 if (typeof travelMode == 'undefined') {
-                    travelMode = "DRIVING";
+                    travelMode = "driving";
                 }
-                if (typeof routeType == 'undefined') {
-                    routeType = 0;
+                if (typeof routeType == 'object') {
+                    if (document.getElementById("routeType").value === "safe") {
+                        routeType = safeRouteIndex;
+                    } else {
+                        routeType = fastRouteIndex;
+                    }
+                    console.log("Travel mode chosen "+travelMode);
+                    console.log("Route type chosen "+routeType);
+                    //routeType = 0;
                 }
+                //select the travel mode on the top.
                 highLightTravelMode("#" + travelMode);
+                //fetch the destination.
                 var targetDestination = $("#to").val();
                 if (currentPosition == null || currentPosition == '' || $("#from").val() != '') {
                     currentPosition = $("#from").val();
                     geoCode(currentPosition, function(latLng) {
                         origin = latLng;
-                        plotSafeRoute(origin, targetDestination, routeType, travelMode);
+                        plotSafeRoute(origin, targetDestination, routeType);
 
                     });
                 } else {
                     origin = safeRouteLat + "," + safeRouteLng;
-                    plotSafeRoute(origin, targetDestination, routeType, travelMode);
+                    plotSafeRoute(origin, targetDestination, routeType);
                 }
 
 
@@ -336,8 +346,8 @@
              * Reads lat, long and plots them on the map.
              * @returns {undefined}
              */
-            var prevCustomMap, startMarker, stopMarker;
-            function plotSafeRoute(origin, targetDestination, routeType, travelMode) {
+            var prevCustomMap, startMarker, stopMarker, travelMode;
+            function plotSafeRoute(origin, targetDestination, routeType) {
                 geoCode(targetDestination, function(targetlatLng) {
                     
                     if (typeof prevCustomMap != 'undefined') {
@@ -345,7 +355,7 @@
                         prevCustomMap.setMap(null);
                     }
                     //Get the JSON messages by sending lat, lng
-                    var route = "/directions?origin="+origin+"&destination="+targetlatLng+"mode="+travelMode;
+                     var route = "/directions?origin="+origin+"&destination="+targetlatLng+"mode="+travelMode;
                     $.get(route, function(data) {
                         points = parseRoute(data, routeType);
 
@@ -410,11 +420,14 @@
                 var totDist = 0;
                 var points = [],
                         routes = data.routes;
-                //   for (i in routes) {
-                //jLegs = routes[i].legs
+//                   for (i in routes) {
+                    
+//                jLegs = routes[i].legs
+                console.log("Total routes "+routes.length);
                 console.log("Route type" + routeType);
                 jLegs = routes[routeType].legs
                 /** Traversing all legs */
+                
                 for (j in jLegs) {
                     jSteps = jLegs[j].steps;
                     /** Traversing all steps */
@@ -429,7 +442,7 @@
                     }
                     console.log("Distance " + totDist);
                 }
-                //  }
+//                  }
                 findShortDist(data);
                 findSafeRoute(data);
                 if (document.getElementById("unsafeRoute").value === "on") {
@@ -467,6 +480,7 @@
                 }
 
                 safeRouteIndex = safeArray.indexOf(Math.min.apply(null, safeArray));
+                
                 console.log("Safe route index " + safeRouteIndex);
             }
             var incidenceCircle = [];
@@ -577,20 +591,13 @@
                 return array;
             }
 
-            function changeRouteType() {
-                if (document.getElementById("routeType").value === "safe") {
-                    console.log("Safe");
-                    calculateRoute('DRIVING', safeRouteIndex);
-                } else {
-                    console.log("Time");
-                    calculateRoute('DRIVING', fastRouteIndex);
-                }
-
+               function selectTravelMode(mode) {
+                travelMode = mode;
+                calculateRoute();
             }
-
             function showUnsafeRoute() {
                 if (document.getElementById("unsafeRoute").value === "on") {
-                    changeRouteType();
+                    calculateRoute();
                 } else {
                     clearIncidenceCir();
                 }
