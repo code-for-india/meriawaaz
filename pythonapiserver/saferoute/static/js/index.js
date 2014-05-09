@@ -298,6 +298,7 @@
              * @returns {undefined}
              */
             function calculateRoute() {
+		clearIncidenceCir();
                 var origin, destination;
                 //select the travel mode and route type.
                 if (typeof travelMode == 'undefined') {
