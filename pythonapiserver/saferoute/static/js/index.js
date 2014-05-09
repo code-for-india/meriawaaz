@@ -81,6 +81,7 @@
                                       '"description":"'+ $("#description").val() +'",'+
                                        '"longitude":"'+prevMarker.getPosition().lng().toString()+'",'+
                                         '"location":"'+results[1].formatted_address +'"}';
+
                               submitReport(pushJson);
                           }  
                         }  
@@ -176,37 +177,21 @@
                     $('#address-box').val('');
                 });
             }
-            $('#report_page').live('pageinit', function() {
-                navigator.geolocation.getCurrentPosition(locSuccess, locError);
-//                demo.add('report_page', function() {
-//                    $('#report-map-canvas').gmap({'center': mobileDemo.center, 'zoom': mobileDemo.zoom, 'disableDefaultUI': true, 'callback': function() {
-//                         initReport(57.7973333,12.0502107);
-//                        // $("#report-map-canvas").css("display","flex")
-//                        }});
-//                }).load('report_page');
-            });
+           $('#report_page').live('pageinit', function() {
+                navigator.geolocation.getCurrentPosition(locSuccessReport, locErrorReport);
+           });
             /////////////////////////////////////Report code ends here.////////////////////////////////
 
             //TODO: Need to integrate both the codes efficiently.
 
             /////////////////////////////////////Safe route code  starts here//////////////////////////
 
-            $('#basic_map').live('pageinit', function() {
-                navigator.geolocation.getCurrentPosition(locSuccess, locError);
-                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
-//                $("#report-map-canvas").css({height: $("#report_page").height() / 2.102});
-//                demo.add('basic_map', function() {
-//                    $('#saferoute_map_canvas').gmap({'center': mobileDemo.center, 'zoom': mobileDemo.zoom, 'disableDefaultUI': true, 'callback': function() {
-//                          initSafeRoute();
-//                        }});
-//                }).load('basic_map');
+             $('#basic_map').live('pageinit', function() {
+                navigator.geolocation.getCurrentPosition(locSuccessSafeRoute, locErrorSafeRoute);
             });
 
             $(document).live("pagebeforeshow", "#map_page", function() {
                 $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
-//                navigator.geolocation.getCurrentPosition(locSuccess, locError);
-//                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
-//                
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
 
             });
@@ -284,20 +269,27 @@
                 initReport();
             }
             var safeRouteLat, safeRouteLng;
-            function locSuccess(position) {
+            function locErrorSafeRoute(error) {
+                $("#from").attr("placeHolder", "Enter current location");
+                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.1});
+                 initReport();
+            }
+            var safeRouteLat, safeRouteLng;
+            function locSuccessSafeRoute(position) {
                 $("#from").attr("placeHolder", "Found current location");
                 initSafeRoute(position.coords.latitude, position.coords.longitude);
                 $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.1});
+            
+            }
+            function locErrorReport(error) {
+                $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
+                initReport();
+            }
+            var safeRouteLat, safeRouteLng;
+            function locSuccessReport(position) {
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
                 initReport(position.coords.latitude, position.coords.longitude);
 
-            }
-            function highLightTravelMode(travelMode) {
-                $("#driving").css("border-bottom", "");
-                $("#walking").css("border-bottom", "");
-                $("#TRANSIT").css("border-bottom", "");
-                $("#BICYCLING").css("border-bottom", "");
-                $(travelMode).css("border-bottom", "4px solid blue");
             }
 
             /**
