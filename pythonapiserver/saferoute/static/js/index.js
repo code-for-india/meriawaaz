@@ -93,7 +93,7 @@
                     url: '/v0/incidents',
                     type: 'POST',
                     data: json,
-                    contentType: "application/json;",
+                    dataType: "json;",
                     success: function(response) {
                         $("#repStatus").text("Submitted successfully");
                         console.log("Submitted")

@@ -20,14 +20,11 @@ def incidents_handler(request):
     return HttpResponse(json.dumps(mod_incidents), content_type="application/json")
   
   elif request.method == 'POST':
-    if request.META['CONTENT_TYPE'] == 'application/json':
-      data = json.loads(request.body)
-      i_manager = IncidentManager()
-      incident = i_manager.load_from_dict(data)
-      incident.save()
-      return HttpResponse(json.dumps(incident.to_dict()), content_type="application/json")
-    else:
-      return HttpResponseBadRequest('Request content is not application/json.')
+    data = json.loads(request.body)
+    i_manager = IncidentManager()
+    incident = i_manager.load_from_dict(data)
+    incident.save()
+    return HttpResponse(json.dumps(incident.to_dict()), content_type="application/json")
   
   else:
     return HttpResponseBadRequest('This method is not supported.')
