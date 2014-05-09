@@ -75,7 +75,7 @@
                                 position: prevMarker.getPosition(),
                                 map: repor_map
                             }); 
-                                 var pushJson = '{"image_location":null,"incident_type":"'+$('input[name="incidence"]:checked').val()+'" ,'+
+                                 var pushJson = '{"image_location":null,"incident_types":"'+$('input[name="incidence"]:checked').val()+'" ,'+
                                     '"latitude":"'+prevMarker.getPosition().lat().toString() +'", ' +
                                      '"risk_index":'+null + ' ,'+
                                       '"description":"'+ $("#description").val() +'",'+
