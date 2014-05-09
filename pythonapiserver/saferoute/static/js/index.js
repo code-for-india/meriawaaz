@@ -355,7 +355,7 @@
                         prevCustomMap.setMap(null);
                     }
                     //Get the JSON messages by sending lat, lng
-                     var route = "/directions?origin="+origin+"&destination="+targetlatLng+"mode="+travelMode;
+                     var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
                     $.get(route, function(data) {
                         points = parseRoute(data, routeType);
 
