@@ -77,7 +77,7 @@
                             }); 
                                  var pushJson = '{"image_location":null,"incident_type":"'+$('input[name="incidence"]:checked').val()+'" ,'+
                                     '"latitude":"'+prevMarker.getPosition().lat().toString() +'", ' +
-                                     '"risk_index":'+null + ' ,'+
+                                     '"risk_index":'+null + ' ,"datetime":"'+currentDT+'",'+
                                       '"description":"'+ $("#description").val() +'",'+
                                        '"longitude":"'+prevMarker.getPosition().lng().toString()+'",'+
                                         '"location":"'+results[1].formatted_address +'"}';
