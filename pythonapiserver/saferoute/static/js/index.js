@@ -2,7 +2,7 @@
  * Webapp frontend JS.
  */
 
-     var mobileDemo = {'center': '57.7973333,12.0502107', 'zoom': 10};
+      var mobileDemo = {'center': '57.7973333,12.0502107', 'zoom': 10};
             var currentPosition;
             //Fallback location if geo is disabled.
             var googleLocation = new google.maps.LatLng(37.421942, -122.08450);
@@ -75,13 +75,12 @@
                                 position: prevMarker.getPosition(),
                                 map: repor_map
                             }); 
-                                  var pushJson = '{"image_location":null,"incident_types":"'+$('input[name="incidence"]:checked').val()+'" ,'+
+                                 var pushJson = '{"image_location":null,"incident_type":"'+$('input[name="incidence"]:checked').val()+'" ,'+
                                     '"latitude":"'+prevMarker.getPosition().lat().toString() +'", ' +
-                                     '"risk_index":'+null + ' ,"datetime":"'+currentDT+'",'+
+                                     '"risk_index":'+null + ' ,'+
                                       '"description":"'+ $("#description").val() +'",'+
                                        '"longitude":"'+prevMarker.getPosition().lng().toString()+'",'+
                                         '"location":"'+results[1].formatted_address +'"}';
-
                               submitReport(pushJson);
                           }  
                         }  
@@ -94,7 +93,7 @@
                     url: '/v0/incidents',
                     type: 'POST',
                     data: json,
-                    dataType: "json;",
+                    contentType: "application/json;",
                     success: function(response) {
                         $("#repStatus").text("Submitted successfully");
                         console.log("Submitted")
@@ -177,21 +176,37 @@
                     $('#address-box').val('');
                 });
             }
-           $('#report_page').live('pageinit', function() {
-                navigator.geolocation.getCurrentPosition(locSuccessReport, locErrorReport);
-           });
+            $('#report_page').live('pageinit', function() {
+                navigator.geolocation.getCurrentPosition(locSuccess, locError);
+//                demo.add('report_page', function() {
+//                    $('#report-map-canvas').gmap({'center': mobileDemo.center, 'zoom': mobileDemo.zoom, 'disableDefaultUI': true, 'callback': function() {
+//                         initReport(57.7973333,12.0502107);
+//                        // $("#report-map-canvas").css("display","flex")
+//                        }});
+//                }).load('report_page');
+            });
             /////////////////////////////////////Report code ends here.////////////////////////////////
 
             //TODO: Need to integrate both the codes efficiently.
 
             /////////////////////////////////////Safe route code  starts here//////////////////////////
 
-             $('#basic_map').live('pageinit', function() {
-                navigator.geolocation.getCurrentPosition(locSuccessSafeRoute, locErrorSafeRoute);
+            $('#basic_map').live('pageinit', function() {
+                navigator.geolocation.getCurrentPosition(locSuccess, locError);
+                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
+//                $("#report-map-canvas").css({height: $("#report_page").height() / 2.102});
+//                demo.add('basic_map', function() {
+//                    $('#saferoute_map_canvas').gmap({'center': mobileDemo.center, 'zoom': mobileDemo.zoom, 'disableDefaultUI': true, 'callback': function() {
+//                          initSafeRoute();
+//                        }});
+//                }).load('basic_map');
             });
 
             $(document).live("pagebeforeshow", "#map_page", function() {
                 $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
+//                navigator.geolocation.getCurrentPosition(locSuccess, locError);
+//                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
+//                
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
 
             });
@@ -269,27 +284,20 @@
                 initReport();
             }
             var safeRouteLat, safeRouteLng;
-            function locErrorSafeRoute(error) {
-                $("#from").attr("placeHolder", "Enter current location");
-                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.1});
-                 initReport();
-            }
-            var safeRouteLat, safeRouteLng;
-            function locSuccessSafeRoute(position) {
+            function locSuccess(position) {
                 $("#from").attr("placeHolder", "Found current location");
                 initSafeRoute(position.coords.latitude, position.coords.longitude);
                 $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.1});
-            
-            }
-            function locErrorReport(error) {
-                $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
-                initReport();
-            }
-            var safeRouteLat, safeRouteLng;
-            function locSuccessReport(position) {
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
                 initReport(position.coords.latitude, position.coords.longitude);
 
+            }
+            function highLightTravelMode(travelMode) {
+                $("#DRIVING").css("border-bottom", "");
+                $("#WALKING").css("border-bottom", "");
+                $("#TRANSIT").css("border-bottom", "");
+                $("#BICYCLING").css("border-bottom", "");
+                $(travelMode).css("border-bottom", "4px solid blue");
             }
 
             /**
@@ -297,26 +305,15 @@
              * @param {type} data
              * @returns {undefined}
              */
-            function calculateRoute() {
-		clearIncidenceCir();
+            function calculateRoute(travelMode, routeType) {
                 var origin, destination;
-                //select the travel mode and route type.
                 if (typeof travelMode == 'undefined') {
-                    travelMode = "driving";
+                    travelMode = "DRIVING";
                 }
-                if (typeof routeType == 'object') {
-                    if (document.getElementById("routeType").value === "safe") {
-                        routeType = safeRouteIndex;
-                    } else {
-                        routeType = fastRouteIndex;
-                    }
-                    console.log("Travel mode chosen "+travelMode);
-                    console.log("Route type chosen "+routeType);
-                    //routeType = 0;
+                if (typeof routeType == 'undefined') {
+                    routeType = 0;
                 }
-                //select the travel mode on the top.
                 highLightTravelMode("#" + travelMode);
-                //fetch the destination.
                 var targetDestination = $("#to").val();
                 if (currentPosition == null || currentPosition == '' || $("#from").val() != '') {
                     currentPosition = $("#from").val();
@@ -339,7 +336,7 @@
              * Reads lat, long and plots them on the map.
              * @returns {undefined}
              */
-            var prevCustomMap, startMarker, stopMarker, travelMode;
+            var prevCustomMap, startMarker, stopMarker;
             function plotSafeRoute(origin, targetDestination, routeType) {
                 geoCode(targetDestination, function(targetlatLng) {
                     
@@ -348,7 +345,7 @@
                         prevCustomMap.setMap(null);
                     }
                     //Get the JSON messages by sending lat, lng
-                     var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
+                    var route = "/directions?origin="+origin+"&destination="+targetlatLng;
                     $.get(route, function(data) {
                         points = parseRoute(data, routeType);
 
@@ -413,14 +410,11 @@
                 var totDist = 0;
                 var points = [],
                         routes = data.routes;
-//                   for (i in routes) {
-                    
-//                jLegs = routes[i].legs
-                console.log("Total routes "+routes.length);
+                //   for (i in routes) {
+                //jLegs = routes[i].legs
                 console.log("Route type" + routeType);
                 jLegs = routes[routeType].legs
                 /** Traversing all legs */
-                
                 for (j in jLegs) {
                     jSteps = jLegs[j].steps;
                     /** Traversing all steps */
@@ -435,7 +429,7 @@
                     }
                     console.log("Distance " + totDist);
                 }
-//                  }
+                //  }
                 findShortDist(data);
                 findSafeRoute(data);
                 if (document.getElementById("unsafeRoute").value === "on") {
@@ -472,8 +466,8 @@
                     safeArray.push(risks[i].total_risk);
                 }
 
-                safeRouteIndex = safeArray.indexOf(Math.min.apply(null, safeArray));
-                
+                safeRouteIndex = 1;//safeArray.indexOf(Math.min.apply(null, safeArray));
+                console.log("Safe route risk " + Math.min.apply(null, safeArray));
                 console.log("Safe route index " + safeRouteIndex);
             }
             var incidenceCircle = [];
@@ -584,13 +578,20 @@
                 return array;
             }
 
-               function selectTravelMode(mode) {
-                travelMode = mode;
-                calculateRoute();
+            function changeRouteType() {
+                if (document.getElementById("routeType").value === "safe") {
+                    console.log("Safe");
+                    calculateRoute('DRIVING', safeRouteIndex);
+                } else {
+                    console.log("Time");
+                    calculateRoute('DRIVING', fastRouteIndex);
+                }
+
             }
+
             function showUnsafeRoute() {
                 if (document.getElementById("unsafeRoute").value === "on") {
-                    calculateRoute();
+                    changeRouteType();
                 } else {
                     clearIncidenceCir();
                 }
