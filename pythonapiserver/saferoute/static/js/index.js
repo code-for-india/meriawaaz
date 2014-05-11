@@ -279,7 +279,7 @@
             function locSuccessReport(position) {
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
                 initReport(position.coords.latitude, position.coords.longitude);
- $("#description").removeClass();
+
             }
             function highLightTravelMode(travelMode) {
                 $("#driving").css("border-bottom", "");
