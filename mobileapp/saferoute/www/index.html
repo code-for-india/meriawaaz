@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Safe Route</title>
+
+        <meta charset="utf-8" />
+
+
+
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta http-equiv="content-language" content="en" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link type="text/css" rel="stylesheet" href="./third_party/css/jquery-mobile-1.0/jquery.mobile.css" />
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script> 
+        <script type="text/javascript" src="./third_party/js/jquery-1.7.1/jquery.min.js"></script>
+        <script type="text/javascript" src="./third_party/js/jquery-mobile-1.0/jquery.mobile.min.js"></script>
+        <script type="text/javascript" src="./third_party/js/demo.js"></script>
+        <script type="text/javascript" src="ui/jquery.ui.map.js"></script>
+        <script src="./third_party/js/jquery.datetimepicker.js"></script>
+        <script src="./third_party/js/date.js"></script>
+        <script type="text/javascript" src="./js/index.js"></script>
+
+    </head>
+    <body>
+
+
+        <div id="home" data-role="page" data-theme="d">
+
+            <div data-role="content">                   
+                <img id="topImg" src="images/ic_launcher.png" width="100" height="100" style="display: block; margin: 0 auto">
+                <ul data-role="listview" data-inset="true"  data-dividertheme="d"> 
+                    <li><a href="#basic_map">Take a safe route</a></li>
+                    <li><a href="#report_page">Report unsafe area</a></li> 
+                </ul>
+            </div>
+
+        </div>
+
+        <div id="basic_map" data-role="page">
+            <div data-role="header">
+                <div>
+                    <!--<a href='javascript:history.back();' data-rel="back">Back</a>-->
+                    <img src="images/ic_launcher.png" onclick="javascript:history.back();">
+                    <img src="images/plus.png" style="float:right" onclick="window.location = '#report_page'">
+                </div>
+
+            </div>
+            <div data-role="content"  data-theme="d" id="mapScreenArea">
+                <div id="planPanel" style="display:none">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="text-align: center" id="DRIVING">
+                                <img src="images/car.jpg"  onclick="calculateRoute('DRIVING',1);"/>
+                            </td>
+                            <td style="text-align: center" id="TRANSIT">
+                                <img src="images/bus.jpg"  onclick="calculateRoute('TRANSIT',1);"/>
+                            </td>
+                            <td style="text-align: center;" id="WALKING">
+                                <img src="images/man.jpg"  onclick="calculateRoute('WALKING',1);"/>
+                            </td>
+                            <td style="text-align: center" id="BICYCLING">
+                                <img src="images/cycle.jpg"  onclick="calculateRoute('BICYCLING',1);"/>
+                            </td>                         
+
+                        </tr>
+                    </table>
+
+                    <br/>
+
+                    <!--table style="width:100%" >
+                        <tr>
+                            <td style="width:50%">
+                                Record you trip safety
+                            </td>
+                            <td style="width:20%">
+                                <select  data-role="slider" id="toggle1" >
+                                    <option value="off">Off</option>
+                                    <option value="on">On</option>
+                                </select> 
+                            </td>
+                        </tr>
+                    </table >
+                    <br/ -->
+
+                    <table style="width:100%" >
+                        <tr>
+                            <td style="width:50%">
+                                Show unsafe areas
+                            </td>
+                            <td style="width:20%">
+                                <select  data-role="slider" id="unsafeRoute"  data-track-theme="b" onchange="showUnsafeRoute();">
+                                    <option value="on">On</option>
+                                    <option value="off">Off</option>                                    
+                                </select> 
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width:100%;padding-top: 10px" >
+                        <tr>
+                            <td style="width:50%">
+                                Route type
+                            </td>
+                            <td style="width:20%">
+                                <select  data-role="slider" id="routeType" data-theme="c" data-track-theme="b" onchange="changeRouteType();">
+                                    <option value="time">Time</option>
+                                    <option value="safe">Safe</option>
+                                </select> 
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="showspace" style="display:none"><br/><br/></div>
+                <div >
+                    <ul data-role="listview" >
+                        <image src="images/handle.png" id="handle" onclick="togglePlanPanel();" width="100%" height="13px"/>
+                        <li >
+                            <input placeholder="Current location" name="from" id="from" />
+                        </li>
+                        <li >
+                            <input placeholder="Enter destination" name="to" id="to" />
+                        </li>
+
+                        <a data-icon="search" style="height: 30px" data-role="button" href="#" id="submit">Get directions</a>
+
+                    </ul>
+
+                </div>
+                <br/>
+
+                <div class="ui-bar-c ui-corner-all ui-shadow">
+                    <div   id="saferoute_map_canvas"  ></div >
+                </div>
+                <div id="results">
+                    <div id="directions"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div id="report_page" data-role="page">
+            <div data-role="header">
+                <div>
+                    <!--<a href='javascript:history.back();' data-rel="back">Back</a>-->
+                    <img src="images/ic_launcher.png" onclick="javascript:history.back();">
+                </div>
+                <!--<img src="images/ic_launcher.png" data-rel="back">--> 
+            </div>
+            <div data-role="content" data-theme="d">
+                <div id="address-canvas" align="center" style="margin-top:1px">
+                    <label>Click on the map or enter street address: </label>
+                    <input placeholder="Enter the address" style="width:90%;" onFocus="geolocate()" type="text" id="address-box"></input>
+                </div>
+                <div id="report-map-canvas" style="display: flex;margin-top:10px;" ></div>
+                <div id="report-button-canvas" style="margin:0 auto; width:50%; margin-top:10px" data-role="controlgroup" data-type="horizontal">
+                    <button id="submit-button">Submit</button><button id="clear-button" onclick="clearReportMarkers();">Clear</button></div> 
+            </div>
+        </div>
+
+     
+
+    </body>
+</html>
