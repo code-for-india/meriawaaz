@@ -342,6 +342,7 @@
                     }
                     //Get the JSON messages by sending lat, lng
 		    var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
+		    $.mobile.showPageLoadingMsg();                  
                     $.get(route, function(data) {
                         points = parseRoute(data, routeType);
 
@@ -378,7 +379,7 @@
                                 data.routes[routeType].bounds.southwest.lng);
                         var bnds = new google.maps.LatLngBounds(startBound, endBound);
                         map.fitBounds(bnds);
-
+                        $.mobile.hidePageLoadingMsg();
                     }, 'json');
 
 
