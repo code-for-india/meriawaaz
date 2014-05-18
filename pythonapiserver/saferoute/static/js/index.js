@@ -186,10 +186,8 @@
             });
 
             $(document).live("pagebeforeshow", "#map_page", function() {
+               
                 $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
-//                navigator.geolocation.getCurrentPosition(locSuccess, locError);
-//                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
-//                
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
 
             });
@@ -342,10 +340,10 @@
                     }
                     //Get the JSON messages by sending lat, lng
 		    var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
-		    $.mobile.showPageLoadingMsg();                  
-                    $.get(route, function(data) {
+                   $.mobile.showPageLoadingMsg();                  
+                    $.get("testSafeRoute.json", function(data) {
                         points = parseRoute(data, routeType);
-
+                        $.mobile.hidePageLoadingMsg();
                         var customPath = new google.maps.Polyline({
                             path: points,
                             geodesic: true,
@@ -379,7 +377,16 @@
                                 data.routes[routeType].bounds.southwest.lng);
                         var bnds = new google.maps.LatLngBounds(startBound, endBound);
                         map.fitBounds(bnds);
-                        $.mobile.hidePageLoadingMsg();
+                       //plotting directions. <ul data-role="listview">
+                       var completeRouteInstructions = '<br><table data-role="table" id="my-table" data-mode="reflow">';                       
+                       for(inst in directionInstructions) {
+                          var tmp = parseInt(inst) + 1;
+                         completeRouteInstructions += ('<tr> <td class="ui-li ui-li-static ui-body-d"> '+tmp+". "+directionInstructions[inst]+'</td><td class="ui-li-static ui-body-d">'+distanceList[inst]+'</td></tr>');
+                       }
+                       completeRouteInstructions += '</table>';
+                       $("#routeDirections").html(completeRouteInstructions);
+                       $("#red_handle").show();
+
                     }, 'json');
 
 
@@ -396,14 +403,15 @@
                 }
                 tog = !tog;
             }
-
+             var directionInstructions = [], distanceList =[];
             /**
              * Parse the route.
              * @param {type} encoded
              * @returns {Array|decodeLine.array}
              */
             function parseRoute(data, routeType) {
-
+                directionInstructions= [];
+                distanceList= [];
                 var totDist = 0;
                 var points = [],
                         routes = data.routes;
@@ -421,6 +429,8 @@
                     for (k in jSteps) {
                         totDist += jSteps[k].duration.value;
                         polyline = jSteps[k].polyline.points;
+                        directionInstructions.push(jSteps[k].html_instructions);
+                        distanceList.push(jSteps[k].distance.text);
                         list = decodeLine(polyline);
                         /** Traversing all points */
                         for (l in list) {
