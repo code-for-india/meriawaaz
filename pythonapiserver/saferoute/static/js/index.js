@@ -1,9 +1,4 @@
-/**
- * Webapp frontend JS.
- */
-
-     var mobileDemo = {'center': '57.7973333,12.0502107', 'zoom': 10};
-            var currentPosition;
+ var currentPosition;
             //Fallback location if geo is disabled.
             var googleLocation = new google.maps.LatLng(37.421942, -122.08450);
             //Canvas for rendering Google Maps
@@ -75,14 +70,13 @@
                                 position: prevMarker.getPosition(),
                                 map: repor_map
                             }); 
-                                  var pushJson = '{"image_location":null,"incident_types":"'+$('input[name="incidence"]:checked').val()+'" ,'+
+                                 var pushJson = '{"image_location":null,"incident_types":"'+$('input[name="incidence"]:checked').val()+'" ,'+
                                     '"latitude":"'+prevMarker.getPosition().lat().toString() +'", ' +
                                      '"risk_index":'+null + ' ,"datetime":"'+currentDT+'",'+
                                       '"description":"'+ $("#description").val() +'",'+
                                        '"longitude":"'+prevMarker.getPosition().lng().toString()+'",'+
                                         '"location":"'+results[1].formatted_address +'"}';
-
-                              submitReport(pushJson);
+                             submitReport(pushJson);
                           }  
                         }  
                       });
@@ -94,7 +88,7 @@
                     url: '/v0/incidents',
                     type: 'POST',
                     data: json,
-                    dataType: "json;",
+                    contentType: "application/json;",
                     success: function(response) {
                         $("#repStatus").text("Submitted successfully");
                         console.log("Submitted")
@@ -177,7 +171,8 @@
                     $('#address-box').val('');
                 });
             }
-           $('#report_page').live('pageinit', function() {
+            $('#report_page').live('pageinit', function() {
+               
                 navigator.geolocation.getCurrentPosition(locSuccessReport, locErrorReport);
            });
             /////////////////////////////////////Report code ends here.////////////////////////////////
@@ -186,12 +181,15 @@
 
             /////////////////////////////////////Safe route code  starts here//////////////////////////
 
-             $('#basic_map').live('pageinit', function() {
+            $('#basic_map').live('pageinit', function() {
                 navigator.geolocation.getCurrentPosition(locSuccessSafeRoute, locErrorSafeRoute);
             });
 
             $(document).live("pagebeforeshow", "#map_page", function() {
                 $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
+//                navigator.geolocation.getCurrentPosition(locSuccess, locError);
+//                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
+//                
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
 
             });
@@ -261,14 +259,6 @@
 
             }
 
-            function locError(error) {
-                $("#from").attr("placeHolder", "Enter current location");
-                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.1});
-                $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
-                initSafeRoute();
-                initReport();
-            }
-            var safeRouteLat, safeRouteLng;
             function locErrorSafeRoute(error) {
                 $("#from").attr("placeHolder", "Enter current location");
                 $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.1});
@@ -291,6 +281,13 @@
                 initReport(position.coords.latitude, position.coords.longitude);
 
             }
+            function highLightTravelMode(travelMode) {
+                $("#driving").css("border-bottom", "");
+                $("#walking").css("border-bottom", "");
+                $("#TRANSIT").css("border-bottom", "");
+                $("#BICYCLING").css("border-bottom", "");
+                $(travelMode).css("border-bottom", "4px solid blue");
+            }
 
             /**
              * Facade method, to calculates path and plots the points on the map.
@@ -298,7 +295,7 @@
              * @returns {undefined}
              */
             function calculateRoute() {
-		clearIncidenceCir();
+                clearIncidenceCir();
                 var origin, destination;
                 //select the travel mode and route type.
                 if (typeof travelMode == 'undefined') {
@@ -329,10 +326,6 @@
                     origin = safeRouteLat + "," + safeRouteLng;
                     plotSafeRoute(origin, targetDestination, routeType);
                 }
-
-
-
-
             }
 
             /**
@@ -348,7 +341,7 @@
                         prevCustomMap.setMap(null);
                     }
                     //Get the JSON messages by sending lat, lng
-                     var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
+                    var route = "/directions?origin="+origin+"&destination="+targetlatLng;
                     $.get(route, function(data) {
                         points = parseRoute(data, routeType);
 
