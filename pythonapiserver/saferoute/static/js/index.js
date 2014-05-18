@@ -272,7 +272,7 @@
             function locErrorSafeRoute(error) {
                 $("#from").attr("placeHolder", "Enter current location");
                 $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.1});
-                 initReport();
+                 initSafeRoute();
             }
             var safeRouteLat, safeRouteLng;
             function locSuccessSafeRoute(position) {
