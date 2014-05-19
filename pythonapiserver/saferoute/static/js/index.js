@@ -341,7 +341,7 @@
                     //Get the JSON messages by sending lat, lng
 		    var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
                    $.mobile.showPageLoadingMsg();                  
-                    $.get("testSafeRoute.json", function(data) {
+                    $.get(route, function(data) {
                         points = parseRoute(data, routeType);
                         $.mobile.hidePageLoadingMsg();
                         var customPath = new google.maps.Polyline({
