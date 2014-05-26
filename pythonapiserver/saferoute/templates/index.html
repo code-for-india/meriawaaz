@@ -4,43 +4,34 @@
         <title>Safe Route</title>
 
         <meta charset="utf-8" />
-
-
-
-
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta http-equiv="content-language" content="en" />
+        <!--<meta name="viewport" content="width=device-width,initial-scale=1" />-->
         <meta name="viewport" content="width=device-width, minimal-ui">
-        <link type="text/css" rel="stylesheet" href="/static/third_party/css/jquery-mobile-1.0/jquery.mobile.css" />
-        <link type="text/css" rel="stylesheet" href="/static/third_party/css/jquery-mobile-1.0/jquery.datetimepicker.css" />
+        <link type="text/css" rel="stylesheet" href="css/jquery-mobile-1.0/jquery.mobile.css" />
+        <link type="text/css" rel="stylesheet" href="./js/jquery.datetimepicker.css" />
         <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false&libraries=places"></script> 
-        <script type="text/javascript" src="/static/third_party/js/jquery-1.7.1/jquery.min.js"></script>
-        <script type="text/javascript" src="/static//third_party/js/jquery-mobile-1.0/jquery.mobile.min.js"></script>
-        <script type="text/javascript" src="/static//third_party/js/demo.js"></script>
-        <script type="text/javascript" src="/static/ui/jquery.ui.map.js"></script>
-        <script src="/static/third_party/js/jquery.datetimepicker.js"></script>
-        <script src="/static/third_party/js/date.js"></script>
-        <script type="text/javascript" src="/static/js/index.js"></script>
-
+        <script type="text/javascript" src="js/jquery-1.7.1/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery-mobile-1.0/jquery.mobile.min.js"></script>
+        <script type="text/javascript" src="ui/jquery.ui.map.js"></script>
+        <script src="./js/jquery.datetimepicker.js"></script>
+        <script src="./js/date.js"></script>
+        <script src="./js/index.js"></script>
     </head>
-  
+    <body>
 
-        <div id="home" data-role="page"  style="background: rgb(57, 57, 57)">
+
+
+        <div id="home" data-role="page"  style="background: #000000">
 
 
             <div data-role="content" >					
-                <img id="topImg" src="static/images/logowhitesmall.png" width="100" height="100" style="display: block; margin: 0 auto">
-                <div style="margin: 0 auto; text-align: left;width:150px">   <h2 style="color:white;"> <span style="font-style: italic"> Safe </span> <span> Route </span> </h2>
-                </div>
-
+                <img id="topImg" src="static/images/logo_homepage/logo_homepage.png" width="100" height="100" style="display: block; margin: 0 auto">
                 <br/>
-                <!-- <ul data-role="listview" data-inset="true"  data-dividertheme="d"> 
-                    <li><a href="#basic_map" >Take a safe route</a></li>
-                    
-                    <li><a href="#report_page">Report unsafe area</a></li> 
-                </ul>  -->
-                <img id="safeR" src="static/images/safe_route.png" style="display: block; margin: 0 auto" width="300" height="55" onclick="location.href = '#basic_map'"/><br/>
-                <img id="reportRoute" src="static/images/report_route.png" style="display: block; margin: 0 auto" width="300" height="55" onclick="location.href = '#report_page'"/>
+                 <img id="topImg" src="static/images/SafeRouteTitleHomepage/SafeRoute_homepage.png" width="200" height="30" style="display: block; margin: 0 auto">
+                <br/>
+                <img id="safeR" src="static/images/SafeRouteButtonHomepage/SafeRoute_button_homepage.png" style="display: block; margin: 0 auto" width="300" height="55" onclick="location.href = '#basic_map'"/><br/>
+                <img id="reportRoute" src="static/images/ReportButtonHomepage/Report_button_homepage.png" style="display: block; margin: 0 auto" width="300" height="55" onclick="location.href = '#report_page'"/>
 
             </div>
 
@@ -53,13 +44,13 @@
                     <span style="float: left">
                         <table>
                             <tr>
-                                <td><img src="static/images/logo_extrasmall.png" onclick="javascript:history.back();"/></td>
-                                <td> <span style="font-size:20px ;font-style: italic">Safe</span><span style="font-size:20px ;">Route</span></td>
+                                <td><img src="static/images/logo_favicon_subpage/logo_subpage.png" onclick="javascript:history.back();" width="30"/></td>
+                                <td style="padding-top: 10px" onclick="javascript:history.back();"> <span style="font-size:20px ;font-style: italic">Safe</span><span style="font-size:20px ;">Route</span></td>
                             </tr>
                         </table> 
                     </span>
                     <span>
-                        <img src="static/images/plus.png" style="float:right;padding-top: 10px" onclick="window.location = '#report_page'">
+                        <img src="static/images/plus.png" style="float:right;padding-top: 5px" onclick="window.location = '#report_page'">
                     </span>
                 </div>
 
@@ -69,16 +60,16 @@
                     <table style="width:100%">
                         <tr>
                             <td style="text-align: center" id="driving">
-                                <img src="static/images/car.jpg"  onclick="selectTravelMode('driving');"/>
+                                <img src="static/images/driveSelected/drive_selected.jpg" width="35" onclick="selectTravelMode('driving');"/>
                             </td>
-                            <td style="text-align: center" id="TRANSIT">
-                                <img src="static/images/bus.jpg"  onclick="selectTravelMode('TRANSIT');"/>
+                            <td style="text-align: center;padding-bottom: 4px" id="TRANSIT">
+                                <img src="static/images/busSelected/bus_selected.jpg" width="35" height="34" onclick="selectTravelMode('TRANSIT');"/>
                             </td>
                             <td style="text-align: center;" id="walking">
-                                <img src="static/images/man.jpg"  onclick="selectTravelMode('walking');"/>
+                                <img src="static/images/walkSelected/walk_selected.jpg" width="35"  height="34" onclick="selectTravelMode('walking');"/>
                             </td>
                             <td style="text-align: center" id="BICYCLING">
-                                <img src="static/images/cycle.jpg"  onclick="selectTravelMode('BICYCLING');"/>
+                                <img src="static/images/bikeSelected/bike_selected.jpg" width="35" onclick="selectTravelMode('BICYCLING');"/>
                             </td>                         
 
                         </tr>
@@ -178,7 +169,7 @@
                 <span style="float: left">
                     <table>
                         <tr>
-                            <td><img src="static/images/logo_extrasmall.png" onclick="window.location = '#report_page'"/></td>
+                            <td><img src="static/images/logo_favicon_subpage/logo_subpage.png" width="30" onclick="window.location = '#report_page'"/></td>
                             <td> <span style="font-size:20px;">Submit a Report</span></td>
                         </tr>
                     </table> 
@@ -218,7 +209,7 @@
                 <span style="float: left">
                     <table>
                         <tr>
-                            <td><img src="static/images/logo_extrasmall.png" onclick="window.location = '#home'"/></td>
+                            <td><img src="static/images/logo_favicon_subpage/logo_subpage.png" onclick="window.location = '#home'" width="30" ></td>
                             <td> <span style="font-size:20px;">Create a Report</span></td>
                         </tr>
                     </table> 
@@ -232,14 +223,13 @@
                 </div>
 
                 <div id="report-map-canvas" style="display: flex;margin-top:10px;" class="ui-bar-c ui-corner-all ui-shadow" ></div>
-                <div id="report-button-canvas" style="margin:0 auto; width:200px;" data-role="controlgroup" data-type="horizontal">
+                <div id="report-button-canvas" style="margin:0 auto; width:180px;" data-role="controlgroup" data-type="horizontal">
                     <br/>                     
                     <button id="clear-button" onclick="clearReportMarkers();">Clear location</button>
 
                 </div> 
             </div>
         </div>
-
 
 
     </body>
