@@ -187,7 +187,7 @@
 
             $(document).live("pagebeforeshow", "#map_page", function() {
                
-                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
+                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 1.4});
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
 
             });
@@ -252,8 +252,16 @@
                 setTimeout(function() {
                     google.maps.event.trigger(map, 'resize');
                 }, 700);
-                new google.maps.places.Autocomplete(document.getElementById('from'));
-                new google.maps.places.Autocomplete(document.getElementById('to'));
+                var fromAddr = new google.maps.places.Autocomplete(document.getElementById('from'),{ types: ['geocode'] });
+                var toAddr = new google.maps.places.Autocomplete(document.getElementById('to'),{ types: ['geocode'] });
+                fromAddr.bindTo('bounds', map); 
+                 toAddr.bindTo('bounds', map);  
+                google.maps.event.addListener(toAddr, 'place_changed', function() {
+                   // if(typeof $("#fromAddr").val() !== 'undefined' && $("#fromAddr").val() !== null) {
+                 
+                     calculateRoute();
+                   // }
+                  });
 
             }
 
@@ -332,6 +340,7 @@
              */
             var prevCustomMap, startMarker, stopMarker, travelMode;
             function plotSafeRoute(origin, targetDestination, routeType) {
+                triggerCount = 0;
                 geoCode(targetDestination, function(targetlatLng) {
                     
                     if (typeof prevCustomMap != 'undefined') {
@@ -340,10 +349,15 @@
                     }
                     //Get the JSON messages by sending lat, lng
 		    var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
-                   $.mobile.showPageLoadingMsg();                  
+                   
+                  // $.mobile.showPageLoadingMsg();             
+                 
+
                     $.get(route, function(data) {
                         points = parseRoute(data, routeType);
-                        $.mobile.hidePageLoadingMsg();
+                       // $.mobile.hidePageLoadingMsg();
+//                        $.mobile.loading('hide');
+                        triggerCount = 0;
                         var customPath = new google.maps.Polyline({
                             path: points,
                             geodesic: true,
@@ -378,7 +392,8 @@
                         var bnds = new google.maps.LatLngBounds(startBound, endBound);
                         map.fitBounds(bnds);
                        //plotting directions. <ul data-role="listview">
-                       var completeRouteInstructions = '<br><table data-role="table" id="my-table" data-mode="reflow">';                       
+                       var completeRouteInstructions = '<br><table data-role="table" id="my-table" data-mode="reflow">'; 
+                       completeRouteInstructions += '<tr  style="background-color:#e79952"> <th colspan="2"> Directions </th> </tr>';
                        for(inst in directionInstructions) {
                           var tmp = parseInt(inst) + 1;
                          completeRouteInstructions += ('<tr> <td class="ui-li ui-li-static ui-body-d"> '+tmp+". "+directionInstructions[inst]+'</td><td class="ui-li-static ui-body-d">'+distanceList[inst]+'</td></tr>');
@@ -536,6 +551,7 @@
                         listOfIncidence.push(showIncidence);
                     }
                 }
+                $("#numIncidents").html("<strong> Incidents on this route # "+incidence.length+"</strong>");
                 console.log("Number of incidence " + incidence.length);
             }
 
