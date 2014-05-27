@@ -396,7 +396,7 @@
                        completeRouteInstructions += '<tr  style="background-color:#e79952"> <th colspan="2"> Directions </th> </tr>';
                        for(inst in directionInstructions) {
                           var tmp = parseInt(inst) + 1;
-                         completeRouteInstructions += ('<tr> <td class="ui-li ui-li-static ui-body-d"> '+tmp+". "+directionInstructions[inst]+'</td><td class="ui-li-static ui-body-d">'+distanceList[inst]+'</td></tr>');
+                         completeRouteInstructions += ('<tr> <td class="ui-li ui-li-static ui-body-d"> '+tmp+". "+directionInstructions[inst]+'</td><td width="45" class="ui-li-static ui-body-d">'+distanceList[inst]+'</td></tr>');
                        }
                        completeRouteInstructions += '</table>';
                        $("#routeDirections").html(completeRouteInstructions);
