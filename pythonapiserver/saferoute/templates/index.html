@@ -31,7 +31,7 @@
                  <img id="topImg" src="static/images/SafeRouteTitleHomepage/SafeRoute_homepage.png" width="200" height="30" style="display: block; margin: 0 auto">
                 <br/>
                 <img id="safeR" src="static/images/SafeRouteButtonHomepage/SafeRoute_button_homepage.png" style="display: block; margin: 0 auto" width="300" height="55" onclick="location.href = '#basic_map'"/><br/>
-                <img id="reportRoute" src="static/images/ReportButtonHomepage/Report_button_homepage.png" style="display: block; margin: 0 auto" width="300" height="55" onclick="location.href = '#report_page'"/>
+                <img id="reportRoute" src="static/images/ReportButtonHomepage/Report_button_homepage.png" style="display: block; margin: 0 auto" width="300" height="55" onclick="location.href = '#report_form'"/>
 
             </div>
 
@@ -50,7 +50,7 @@
                         </table> 
                     </span>
                     <span>
-                        <img src="static/images/plus.png" style="float:right;padding-top: 5px" onclick="window.location = '#report_page'">
+                        <img src="static/images/plus.png" style="float:right;padding-top: 5px" onclick="window.location = '#report_form'">
                     </span>
                 </div>
 
@@ -172,34 +172,28 @@
                 <span style="float: left">
                     <table>
                         <tr>
-                            <td><img src="static/images/logo_favicon_subpage/logo_subpage.png" width="30" onclick="window.location = '#report_page'"/></td>
-                            <td> <span style="font-size:20px;">Submit a Report</span></td>
+                            <td><img src="static/images/logo_favicon_subpage/logo_subpage.png" width="30" onclick="window.location = '#home'"/></td>
+                            <td> <span style="font-size:20px;">Submit a report</span></td>
                         </tr>
                     </table> 
                 </span>
             </div> 
             <div data-role="content" data-theme="d">
-
-                <div>Select Date and Time <input class="date-time-picker-class"/></div><br/>
-                <div>Select incident</div>
-                <table>
-                    <tr><td style="width:50px"  ><input type="radio"  class="incidence-class" name="incidence" checked value="Whistling" />
-                        </td><td>Whistling</td></tr>
-                    <tr><td><input type="radio" class="incidence-class" name="incidence" value="Eve teasing"/></td><td>Eve teasing</td></tr>
-                    <tr><td><input type="radio" class="incidence-class" name="incidence" value="Molestation"/></td><td>Molestation</td></tr>
-                    <tr><td><input type="radio" class="incidence-class" name="incidence" value="Chain snatching"/></td><td>Chain snatching</td></tr>
-                    <tr><td><input type="radio" class="incidence-class" name="incidence" value="Rape"/></td><td>Rape </td></tr>
-                    <tr><td><input type="radio" class="incidence-class" name="incidence" value="Others"/></td><td>Others </td></tr>
-                </table>
-                <br/>
-                <div> Description:<textarea id="description" cols="40" name="textarea-1" id="textarea-1" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset"></textarea> </div>
-                <div style="margin:0 auto; width:170px;height: 20px" id="repStatus"></div>
+                <div> <strong>Incident Type </strong></div>
+                <div id="incidence"> <input type="text"  required/> </div>
+                <div style="padding-top: 5px; font-weight: bold"> Location </div>
+                <!--<div> <Input type="text" placeholder="Current Location"/> </div>-->
+                <div style="padding-top: 10px; font-weight: bold"><span><img src="static/images/google-maps-logo.jpg" width="30px" height="30px" onclick="window.location = '#report_page'"/></span> Select on map </div>
+                <div style="padding-top: 10px; font-weight: bold"> Time </div>
+                <div> <input class="date-time-picker-class" id="incidenceTime" required/></div><br/>
+                 <div style="padding-top: 5px; font-weight: bold"> What happened ?<textarea id="description" cols="40" name="textarea-1" id="textarea-1" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset"></textarea> </div>
+                <div style="margin:0 auto; width:170px;height: 20px;" id="repStatus"></div>
                 <div id="report-submit-button-canvas" style="margin:0 auto; width:200px;" data-role="controlgroup" data-type="horizontal">
                     <table> <tr><td>
                                 <button id="submit-button">Submit</button>
                             </td>
                             <td>
-                                <button id="clear-button" onclick="window.location = '#report_page'">Cancel</button>
+                                <button id="clear-button" onclick="window.location = '#home'">Cancel</button>
                             </td>
                         </tr>
                     </table>
@@ -212,8 +206,8 @@
                 <span style="float: left">
                     <table>
                         <tr>
-                            <td><img src="static/images/logo_favicon_subpage/logo_subpage.png" onclick="window.location = '#home'" width="30" ></td>
-                            <td> <span style="font-size:20px;">Create a Report</span></td>
+                            <td><img src="static/images/logo_favicon_subpage/logo_subpage.png" onclick="window.location = '#report_form'" width="30" ></td>
+                            <td> <span style="font-size:20px;">Select on map</span></td>
                         </tr>
                     </table> 
                 </span>
@@ -228,7 +222,8 @@
                 <div id="report-map-canvas" style="display: flex;margin-top:10px;" class="ui-bar-c ui-corner-all ui-shadow" ></div>
                 <div id="report-button-canvas" style="margin:0 auto; width:180px;" data-role="controlgroup" data-type="horizontal">
                     <br/>                     
-                    <button id="clear-button" onclick="clearReportMarkers();">Clear location</button>
+                    <button id="select-map-button" onclick="window.location = '#report_form'">Ok</button>
+                    <button id="clear-button" onclick="clearReportMarkers();">Clear</button>
 
                 </div> 
             </div>

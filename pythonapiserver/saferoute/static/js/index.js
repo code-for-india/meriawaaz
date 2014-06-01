@@ -58,8 +58,17 @@
                     google.maps.event.trigger(repor_map, 'resize');
                     reportInitialize();
                 }, 700);
-                $("#submit-button").click(function() {
-                   
+                 $("#submit-button").off("click");
+                $("#submit-button").on("click", function() {
+                    $("#repStatus").text("");
+                    document.getElementById("incidence");
+                    if($("#incidence").find("input").val().trim().length == 0) {
+                      $("#repStatus").text("Missing incidence type"); 
+                      $("#repStatus").css("color","red");
+                    } else if(typeof prevMarker == 'undefined') {
+                      $("#repStatus").text("Missing location"); 
+                      $("#repStatus").css("color","red");
+                    }
                     var coordinates = prevMarker.getPosition();
                     geocoder = new google.maps.Geocoder();
                     geocoder.geocode({'latLng': prevMarker.getPosition()}, function(results, status) {
@@ -70,13 +79,14 @@
                                 position: prevMarker.getPosition(),
                                 map: repor_map
                             }); 
-                                 var pushJson = '{"image_location":null,"incident_types":"'+$('input[name="incidence"]:checked').val()+'" ,'+
+                                 var pushJson = '{"image_location":null,"incident_types":"'+$("#incidence").find("input").val()+'" ,'+
                                     '"latitude":"'+prevMarker.getPosition().lat().toString() +'", ' +
                                      '"risk_index":'+null + ' ,"datetime":"'+currentDT+'",'+
                                       '"description":"'+ $("#description").val() +'",'+
                                        '"longitude":"'+prevMarker.getPosition().lng().toString()+'",'+
                                         '"location":"'+results[1].formatted_address +'"}';
                              submitReport(pushJson);
+                           
                           }  
                         }  
                       });
@@ -103,11 +113,12 @@
             function initAndAddMarker(marker) {
                 clearReportMarkers();
                 prevMarker = marker;
-                google.maps.event.addListener(marker, 'click', function(event) {
-                    currentDT = new Date().toString('yyyy/MM/dd HH:mm');
-                    $(".date-time-picker-class").datetimepicker({value: currentDT, mask: '9999/19/39 29:59', });
-                    location.href = '#report_form';
-                });
+                
+//                google.maps.event.addListener(marker, 'click', function(event) {
+//                    currentDT = new Date().toString('yyyy/MM/dd HH:mm');
+//                    $(".date-time-picker-class").datetimepicker({value: currentDT, mask: '9999/19/39 29:59', });
+//                   // location.href = '#report_page';
+//                });
             }
             ;
 
@@ -171,8 +182,12 @@
                     $('#address-box').val('');
                 });
             }
+            $('#report_form').live('pageinit', function() {
+                currentDT = new Date().toString('yyyy/MM/dd HH:mm');
+                $(".date-time-picker-class").datetimepicker({value: currentDT, mask: '9999/19/39 29:59', });
+                 navigator.geolocation.getCurrentPosition(locSuccessReport, locErrorReport);
+           });
             $('#report_page').live('pageinit', function() {
-               
                 navigator.geolocation.getCurrentPosition(locSuccessReport, locErrorReport);
            });
             /////////////////////////////////////Report code ends here.////////////////////////////////
@@ -347,15 +362,15 @@
                         //erase previous map.
                         prevCustomMap.setMap(null);
                     }
-                    //Get the JSON messages by sending lat, lng
+                    //Get the JSON messages by sending lat, lrng
 		    var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
                    
-                  // $.mobile.showPageLoadingMsg();             
-                 
+                   $.mobile.showPageLoadingMsg();             
+                   $(".ui-loader-default").remove()
 
                     $.get(route, function(data) {
                         points = parseRoute(data, routeType);
-                       // $.mobile.hidePageLoadingMsg();
+                        $.mobile.hidePageLoadingMsg();
 //                        $.mobile.loading('hide');
                         triggerCount = 0;
                         var customPath = new google.maps.Polyline({
@@ -604,10 +619,11 @@
                 return array;
             }
 
-               function selectTravelMode(mode) {
+            function selectTravelMode(mode) {
                 travelMode = mode;
                 calculateRoute();
             }
+            
             function showUnsafeRoute() {
                 if (document.getElementById("unsafeRoute").value === "on") {
                     calculateRoute();
