@@ -234,11 +234,11 @@
 
                     directionsDisplay.setMap(map);
                     directionsDisplay.setPanel(document.getElementById("directions"));
-                    var currentPositionMarker = new google.maps.Marker({
-                        position: currentPosition,
-                        map: map,
-                        title: "Current position"
-                    });
+//                    var currentPositionMarker = new google.maps.Marker({
+//                        position: currentPosition,
+//                        map: map,
+//                        title: "Current position"
+//                    });
 //                     var infowindow = new google.maps.InfoWindow();
 //                    google.maps.event.addListener(currentPositionMarker, 'click', function() {
 //                        infowindow.setContent("Current position: latitude: " + lat + " longitude: " + lng);
@@ -363,7 +363,7 @@
                         prevCustomMap.setMap(null);
                     }
                     //Get the JSON messages by sending lat, lrng
-		    var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
+		    var route = "http://localhost:8000/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
                    
                    $.mobile.showPageLoadingMsg();             
                    $(".ui-loader-default").remove()
@@ -519,29 +519,41 @@
 
 
             var listOfIncidence = [];
+            var markerCluster;
             function plotIncidence(data, index) {
-                clearIncidenceCir();
-                var incidence = [];
+                //clearIncidenceCir();
+                if(typeof markerCluster != 'undefined') {
+                    markerCluster.clearMarkers();
+                }
+                //var incidence = [];
+                 var markers = [];
                 var riskBrk = data.risks[index].risk_breakdown;
                 for (i in riskBrk) {
                     //populate array if there are risks.
                     if (riskBrk[i].risk > 0) {
                         var showIncidence;
                         var event = new google.maps.LatLng(riskBrk[i].lat, riskBrk[i].lng);
-                        incidence.push(event);
-                        var incidenceCirclePlots = {
-                            strokeColor: '#FF0000',
-                            strokeOpacity: 0.8,
-                            clickable: true,
-                            strokeWeight: 2,
-                            fillColor: '#FF0000',
-                            fillOpacity: 0.35,
-                            map: map,
-                            center: event,
-                            radius: 50
-                        };
-                        //create circle object..
-                        var circ = new google.maps.Circle(incidenceCirclePlots);
+                        //== Adding clusters start
+                        var marker1 = new google.maps.Marker({
+                            position: event
+                          });
+                          markers.push(marker1);
+                         
+                        //== Adding clusters end
+//                        incidence.push(event);
+//                        var incidenceCirclePlots = {
+//                            strokeColor: '#FF0000',
+//                            strokeOpacity: 0.8,
+//                            clickable: true,
+//                            strokeWeight: 2,
+//                            fillColor: '#FF0000',
+//                            fillOpacity: 0.35,
+//                            map: map,
+//                            center: event,
+//                            radius: 50
+//                        };
+//                        //create circle object..
+//                        var circ = new google.maps.Circle(incidenceCirclePlots);
 
                         var format = "<table>"
                         //create info window, only if the incidents are defined.
@@ -554,20 +566,33 @@
                                         "<tr><td style='width:130px' >Reported on </td><td>" + reported.getDate() + "/" + (reported.getMonth() + 1) + "/" + reported.getFullYear() + "(DD/MM/YYYY)</td></tr></table>",
                                 maxWidth: 400,
                                 maxHeight: 300
-                            });
-                            addCir(circ, showIncidence);
+                            });                                                 
+                            addIncidentPoints(marker1, showIncidence);
+                            //addCir(circ, showIncidence);
                         } else {
                             showIncidence = new google.maps.InfoWindow({
                                 content: "No data available",
                                 maxWidth: 200
-                            });
-                            addCir(circ, showIncidence);
+                            });                               
+                            addIncidentPoints(marker1, showIncidence);
+                           // addCir(circ, showIncidence);
                         }
                         listOfIncidence.push(showIncidence);
                     }
-                }
+                } var markerCluster = new MarkerClusterer(map, markers);
                 $("#numIncidents").html("<strong> Incidents on this route # "+incidence.length+"</strong>");
                 console.log("Number of incidence " + incidence.length);
+            }
+            
+             function addIncidentPoints(marker, infoWindow) {
+
+                //add a click event to the circle
+                google.maps.event.addListener(marker, 'click', function(ev) {
+                    //call  the infoWindow
+                    infoWindow.setPosition(ev.latLng);
+                    infoWindow.open(map);
+                });
+                
             }
 
             function addCir(circ, infoWindow) {
