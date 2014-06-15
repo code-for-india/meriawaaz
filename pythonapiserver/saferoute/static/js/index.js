@@ -58,8 +58,17 @@
                     google.maps.event.trigger(repor_map, 'resize');
                     reportInitialize();
                 }, 700);
-                $("#submit-button").click(function() {
-                   
+                 $("#submit-button").off("click");
+                $("#submit-button").on("click", function() {
+                    $("#repStatus").text("");
+                    document.getElementById("incidence");
+                    if($("#incidence").find("input").val().trim().length == 0) {
+                      $("#repStatus").text("Missing incidence type"); 
+                      $("#repStatus").css("color","red");
+                    } else if(typeof prevMarker == 'undefined') {
+                      $("#repStatus").text("Missing location"); 
+                      $("#repStatus").css("color","red");
+                    }
                     var coordinates = prevMarker.getPosition();
                     geocoder = new google.maps.Geocoder();
                     geocoder.geocode({'latLng': prevMarker.getPosition()}, function(results, status) {
@@ -70,13 +79,14 @@
                                 position: prevMarker.getPosition(),
                                 map: repor_map
                             }); 
-                                 var pushJson = '{"image_location":null,"incident_types":"'+$('input[name="incidence"]:checked').val()+'" ,'+
+                                 var pushJson = '{"image_location":null,"incident_types":"'+$("#incidence").find("input").val()+'" ,'+
                                     '"latitude":"'+prevMarker.getPosition().lat().toString() +'", ' +
                                      '"risk_index":'+null + ' ,"datetime":"'+currentDT+'",'+
                                       '"description":"'+ $("#description").val() +'",'+
                                        '"longitude":"'+prevMarker.getPosition().lng().toString()+'",'+
                                         '"location":"'+results[1].formatted_address +'"}';
                              submitReport(pushJson);
+                           
                           }  
                         }  
                       });
@@ -103,11 +113,12 @@
             function initAndAddMarker(marker) {
                 clearReportMarkers();
                 prevMarker = marker;
-                google.maps.event.addListener(marker, 'click', function(event) {
-                    currentDT = new Date().toString('yyyy/MM/dd HH:mm');
-                    $(".date-time-picker-class").datetimepicker({value: currentDT, mask: '9999/19/39 29:59', });
-                    location.href = '#report_form';
-                });
+                
+//                google.maps.event.addListener(marker, 'click', function(event) {
+//                    currentDT = new Date().toString('yyyy/MM/dd HH:mm');
+//                    $(".date-time-picker-class").datetimepicker({value: currentDT, mask: '9999/19/39 29:59', });
+//                   // location.href = '#report_page';
+//                });
             }
             ;
 
@@ -171,8 +182,12 @@
                     $('#address-box').val('');
                 });
             }
+            $('#report_form').live('pageinit', function() {
+                currentDT = new Date().toString('yyyy/MM/dd HH:mm');
+                $(".date-time-picker-class").datetimepicker({value: currentDT, mask: '9999/19/39 29:59', });
+                 navigator.geolocation.getCurrentPosition(locSuccessReport, locErrorReport);
+           });
             $('#report_page').live('pageinit', function() {
-               
                 navigator.geolocation.getCurrentPosition(locSuccessReport, locErrorReport);
            });
             /////////////////////////////////////Report code ends here.////////////////////////////////
@@ -186,10 +201,8 @@
             });
 
             $(document).live("pagebeforeshow", "#map_page", function() {
-                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
-//                navigator.geolocation.getCurrentPosition(locSuccess, locError);
-//                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.102});
-//                
+               
+                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 1.4});
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
 
             });
@@ -221,11 +234,11 @@
 
                     directionsDisplay.setMap(map);
                     directionsDisplay.setPanel(document.getElementById("directions"));
-                    var currentPositionMarker = new google.maps.Marker({
-                        position: currentPosition,
-                        map: map,
-                        title: "Current position"
-                    });
+//                    var currentPositionMarker = new google.maps.Marker({
+//                        position: currentPosition,
+//                        map: map,
+//                        title: "Current position"
+//                    });
 //                     var infowindow = new google.maps.InfoWindow();
 //                    google.maps.event.addListener(currentPositionMarker, 'click', function() {
 //                        infowindow.setContent("Current position: latitude: " + lat + " longitude: " + lng);
@@ -254,15 +267,23 @@
                 setTimeout(function() {
                     google.maps.event.trigger(map, 'resize');
                 }, 700);
-                new google.maps.places.Autocomplete(document.getElementById('from'));
-                new google.maps.places.Autocomplete(document.getElementById('to'));
+                var fromAddr = new google.maps.places.Autocomplete(document.getElementById('from'),{ types: ['geocode'] });
+                var toAddr = new google.maps.places.Autocomplete(document.getElementById('to'),{ types: ['geocode'] });
+                fromAddr.bindTo('bounds', map); 
+                 toAddr.bindTo('bounds', map);  
+                google.maps.event.addListener(toAddr, 'place_changed', function() {
+                   // if(typeof $("#fromAddr").val() !== 'undefined' && $("#fromAddr").val() !== null) {
+                 
+                     calculateRoute();
+                   // }
+                  });
 
             }
 
             function locErrorSafeRoute(error) {
                 $("#from").attr("placeHolder", "Enter current location");
                 $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.1});
-                 initReport();
+                 initSafeRoute();
             }
             var safeRouteLat, safeRouteLng;
             function locSuccessSafeRoute(position) {
@@ -334,17 +355,24 @@
              */
             var prevCustomMap, startMarker, stopMarker, travelMode;
             function plotSafeRoute(origin, targetDestination, routeType) {
+                triggerCount = 0;
                 geoCode(targetDestination, function(targetlatLng) {
                     
                     if (typeof prevCustomMap != 'undefined') {
                         //erase previous map.
                         prevCustomMap.setMap(null);
                     }
-                    //Get the JSON messages by sending lat, lng
-                    var route = "/directions?origin="+origin+"&destination="+targetlatLng;
+                    //Get the JSON messages by sending lat, lrng
+		    var route = "http://localhost:8000/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
+                   
+                   $.mobile.showPageLoadingMsg();             
+                   $(".ui-loader-default").remove()
+
                     $.get(route, function(data) {
                         points = parseRoute(data, routeType);
-
+                        $.mobile.hidePageLoadingMsg();
+//                        $.mobile.loading('hide');
+                        triggerCount = 0;
                         var customPath = new google.maps.Polyline({
                             path: points,
                             geodesic: true,
@@ -378,6 +406,16 @@
                                 data.routes[routeType].bounds.southwest.lng);
                         var bnds = new google.maps.LatLngBounds(startBound, endBound);
                         map.fitBounds(bnds);
+                       //plotting directions. <ul data-role="listview">
+                       var completeRouteInstructions = '<br><table data-role="table" id="my-table" data-mode="reflow">'; 
+                       completeRouteInstructions += '<tr  style="background-color:#e79952"> <th colspan="2"> Directions </th> </tr>';
+                       for(inst in directionInstructions) {
+                          var tmp = parseInt(inst) + 1;
+                         completeRouteInstructions += ('<tr> <td class="ui-li ui-li-static ui-body-d"> '+tmp+". "+directionInstructions[inst]+'</td><td width="45" class="ui-li-static ui-body-d">'+distanceList[inst]+'</td></tr>');
+                       }
+                       completeRouteInstructions += '</table>';
+                       $("#routeDirections").html(completeRouteInstructions);
+                       $("#red_handle").show();
 
                     }, 'json');
 
@@ -395,14 +433,15 @@
                 }
                 tog = !tog;
             }
-
+             var directionInstructions = [], distanceList =[];
             /**
              * Parse the route.
              * @param {type} encoded
              * @returns {Array|decodeLine.array}
              */
             function parseRoute(data, routeType) {
-
+                directionInstructions= [];
+                distanceList= [];
                 var totDist = 0;
                 var points = [],
                         routes = data.routes;
@@ -420,6 +459,8 @@
                     for (k in jSteps) {
                         totDist += jSteps[k].duration.value;
                         polyline = jSteps[k].polyline.points;
+                        directionInstructions.push(jSteps[k].html_instructions);
+                        distanceList.push(jSteps[k].distance.text);
                         list = decodeLine(polyline);
                         /** Traversing all points */
                         for (l in list) {
@@ -478,29 +519,41 @@
 
 
             var listOfIncidence = [];
+            var markerCluster;
             function plotIncidence(data, index) {
-                clearIncidenceCir();
-                var incidence = [];
+                //clearIncidenceCir();
+                if(typeof markerCluster != 'undefined') {
+                    markerCluster.clearMarkers();
+                }
+                //var incidence = [];
+                 var markers = [];
                 var riskBrk = data.risks[index].risk_breakdown;
                 for (i in riskBrk) {
                     //populate array if there are risks.
                     if (riskBrk[i].risk > 0) {
                         var showIncidence;
                         var event = new google.maps.LatLng(riskBrk[i].lat, riskBrk[i].lng);
-                        incidence.push(event);
-                        var incidenceCirclePlots = {
-                            strokeColor: '#FF0000',
-                            strokeOpacity: 0.8,
-                            clickable: true,
-                            strokeWeight: 2,
-                            fillColor: '#FF0000',
-                            fillOpacity: 0.35,
-                            map: map,
-                            center: event,
-                            radius: 50
-                        };
-                        //create circle object..
-                        var circ = new google.maps.Circle(incidenceCirclePlots);
+                        //== Adding clusters start
+                        var marker1 = new google.maps.Marker({
+                            position: event
+                          });
+                          markers.push(marker1);
+                         
+                        //== Adding clusters end
+//                        incidence.push(event);
+//                        var incidenceCirclePlots = {
+//                            strokeColor: '#FF0000',
+//                            strokeOpacity: 0.8,
+//                            clickable: true,
+//                            strokeWeight: 2,
+//                            fillColor: '#FF0000',
+//                            fillOpacity: 0.35,
+//                            map: map,
+//                            center: event,
+//                            radius: 50
+//                        };
+//                        //create circle object..
+//                        var circ = new google.maps.Circle(incidenceCirclePlots);
 
                         var format = "<table>"
                         //create info window, only if the incidents are defined.
@@ -513,19 +566,33 @@
                                         "<tr><td style='width:130px' >Reported on </td><td>" + reported.getDate() + "/" + (reported.getMonth() + 1) + "/" + reported.getFullYear() + "(DD/MM/YYYY)</td></tr></table>",
                                 maxWidth: 400,
                                 maxHeight: 300
-                            });
-                            addCir(circ, showIncidence);
+                            });                                                 
+                            addIncidentPoints(marker1, showIncidence);
+                            //addCir(circ, showIncidence);
                         } else {
                             showIncidence = new google.maps.InfoWindow({
                                 content: "No data available",
                                 maxWidth: 200
-                            });
-                            addCir(circ, showIncidence);
+                            });                               
+                            addIncidentPoints(marker1, showIncidence);
+                           // addCir(circ, showIncidence);
                         }
                         listOfIncidence.push(showIncidence);
                     }
-                }
+                } var markerCluster = new MarkerClusterer(map, markers);
+                $("#numIncidents").html("<strong> Incidents on this route # "+incidence.length+"</strong>");
                 console.log("Number of incidence " + incidence.length);
+            }
+            
+             function addIncidentPoints(marker, infoWindow) {
+
+                //add a click event to the circle
+                google.maps.event.addListener(marker, 'click', function(ev) {
+                    //call  the infoWindow
+                    infoWindow.setPosition(ev.latLng);
+                    infoWindow.open(map);
+                });
+                
             }
 
             function addCir(circ, infoWindow) {
@@ -577,10 +644,11 @@
                 return array;
             }
 
-               function selectTravelMode(mode) {
+            function selectTravelMode(mode) {
                 travelMode = mode;
                 calculateRoute();
             }
+            
             function showUnsafeRoute() {
                 if (document.getElementById("unsafeRoute").value === "on") {
                     calculateRoute();

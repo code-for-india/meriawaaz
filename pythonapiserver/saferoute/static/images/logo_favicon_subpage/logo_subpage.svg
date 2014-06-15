@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="39px" height="40px" viewBox="0 0 39 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.0.1 (7597) - http://www.bohemiancoding.com/sketch -->
+    <title>logo_subpage</title>
+    <description>Created with Sketch.</description>
+    <defs></defs>
+    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="logo_subpage" sketch:type="MSLayerGroup">
+            <g id="Oval-2-+-Oval-1" sketch:type="MSShapeGroup">
+                <ellipse id="Oval-2" fill="#32A7AB" cx="19.5" cy="20.8988764" rx="19.5" ry="19.1011236"></ellipse>
+                <ellipse id="Oval-1" fill="#38C4C8" cx="19.5" cy="19.1011236" rx="19.5" ry="19.1011236"></ellipse>
+            </g>
+            <g id="Fill-137-+-Fill-135" transform="translate(9.176471, 9.438202)" sketch:type="MSShapeGroup">
+                <path d="M0.917647059,11.9101124 L10.7823529,11.9101124 L10.7823529,21.5730337 L11.8784314,21.5730337 L20.6470588,2.24719101 L0.917647059,10.8364544 L0.917647059,11.9101124" id="Fill-137" fill="#32A7AB"></path>
+                <path d="M0,9.66292135 L9.86470588,9.66292135 L9.86470588,19.3258427 L10.9607843,19.3258427 L19.7294118,0 L0,8.58926342 L0,9.66292135" id="Fill-135" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>
