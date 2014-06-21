@@ -363,7 +363,7 @@
                         prevCustomMap.setMap(null);
                     }
                     //Get the JSON messages by sending lat, lrng
-		    var route = "http://localhost:8000/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
+		    var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
                    
                    $.mobile.showPageLoadingMsg();             
                    $(".ui-loader-default").remove()
