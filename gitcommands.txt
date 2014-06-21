@@ -1,4 +1,0 @@
-git remote add origin https://vishal786@bitbucket.org/vishal786/saferoute.git
-git add WebAppCode
-git  commit -m "Adding the webapp"
-git push -u origin master
