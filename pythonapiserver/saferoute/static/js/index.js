@@ -580,7 +580,7 @@
                         listOfIncidence.push(showIncidence);
                     }
                 } var markerCluster = new MarkerClusterer(map, markers);
-                $("#numIncidents").html("<strong> Incidents on this route # "+incidence.length+"</strong>");
+                //$("#numIncidents").html("<strong> Incidents on this route # "+incidence.length+"</strong>");
                 console.log("Number of incidence " + incidence.length);
             }
             
