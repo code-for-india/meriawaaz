@@ -93,6 +93,8 @@
     <gap:splash src="res/screen/ios/screen-ipad-landscape.png"     gap:platform="ios"     width="1024" height="768" />
     <gap:splash src="res/screen/windows-phone/screen-portrait.jpg" gap:platform="winphone" />
 
+    <preference name="SplashScreen" value="splash" />
+    <preference name="SplashScreenDelay" value="10000" />
     <!--
         Define access to external domains.
 
