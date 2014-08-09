@@ -6,6 +6,7 @@ from models import Incident
 
 LAT_TO_M = 111200.0
 
+
 def get_incidents_near_location(lat, lng, radius=0):
     """Gets incidents based on location and a radius. Radius is given in meters.
 
@@ -19,12 +20,13 @@ def get_incidents_near_location(lat, lng, radius=0):
     here = {}
     if lat:
         lat_lower_bound, lat_greater_bound = get_bounds(lat, radius)
-        here["latitude"] = {'$lt' : lat_greater_bound, '$gt' : lat_lower_bound}
+        here["latitude"] = {'$lt': lat_greater_bound, '$gt': lat_lower_bound}
     if lng:
         lng_lower_bound, lng_greater_bound = get_bounds(lng, radius)
-        here["longitude"] = {'$lt' : lng_greater_bound, '$gt' : lng_lower_bound}
+        here["longitude"] = {'$lt': lng_greater_bound, '$gt': lng_lower_bound}
     results = Incident.objects.raw_query(here)
     return results
+
 
 def get_bounds(measure, radius=0):
     """Gets upper and lower bounds using radius.

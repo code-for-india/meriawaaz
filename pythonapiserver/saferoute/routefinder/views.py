@@ -2,6 +2,7 @@ import urllib
 import json
 from django.http import HttpResponse
 from incidentapi.controllers import get_incidents_near_location
+import time
 
 
 """
@@ -31,7 +32,11 @@ def get_directions_from_google(origin, destination, mode, **geo_args):
         'destination': destination
     })
     if mode:
-        url = DIRECTION_BASE_URL + '&mode=' + mode + '&' + urllib.urlencode(geo_args)
+        if mode.lower() == 'transit':
+            url = DIRECTION_BASE_URL + '&mode=' + mode + '&' + urllib.urlencode(geo_args) + '&departure_time=' + \
+                str(int(time.time()))
+        else:
+            url = DIRECTION_BASE_URL + '&mode=' + mode + '&' + urllib.urlencode(geo_args)
     else:
         url = DIRECTION_BASE_URL + '&' + urllib.urlencode(geo_args)
     return urllib.urlopen(url)
