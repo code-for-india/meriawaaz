@@ -1,6 +1,6 @@
 from collections import namedtuple
 from enum import Enum
-
+from models import Incident
 
 """
    we calculate the risk, also referred to as the probability of incident occurring at a given co-ordinate
@@ -29,24 +29,50 @@ from enum import Enum
 """
 
 
-incident = Enum('incident', 'recency eve_teasing ogling taking_pictures catcalls commenting rape indecent_exposure'
-                'groping sexual_invites poor_lighting chain_snatching')
+#incident = Enum('incident', 'recency eve_teasing ogling taking_pictures catcalls commenting rape indecent_exposure'
+#                'groping sexual_invites poor_lighting chain_snatching')
+#
+#print(incident)
+#
+#metric_array_x = namedtuple("metric_array_x", "recency " + incident.eve_teasing +" "+ incident.ogling+" "+
+#                                              incident.taking_pictures+" "+incident.catcalls+" "+incident.commenting+" "+
+#                                              incident.rape+" "+incident.indecent_exposure+" "+incident.groping+" "+
+#                                              incident.sexual_invites+" "+incident.poor_lighting+" "+incident.chain_snatching+" "+
+#                                              police_proximity)
+#
+#weighted_array_a = metric_array_x(recency="10", eve_teasing="5", oglingincident="3", taking_pictures="4", catcalls="4",
+#                                  commenting="3", rape="10", indecent_exposure="6", groping="8", sexual_invites="6",
+#                                  poor_lighting="5", chain_snatching="7", police_proximity="-10")
+#
 
-metric_array_x = namedtuple("metric_array_x", "recency incident.eve_teasing incident.ogling "
-                                              "incident.taking_pictures incident.catcalls incident.commenting "
-                                              "incident.rape incident.indecent_exposure incident.groping"
-                                              "incident.sexual_invites incident.poor_lighting incident.chain_snatching "
-                                              "police_proximity")
+class Weights:
+    recency=10
+    eve_teasing=5
+    oglingincident=3
+    taking_pictures=4
+    catcalls=4
+    commenting=3
+    rape=10
+    indecent_exposure=6
+    groping=8
+    sexual_invites=6
+    poor_lighting=5
+    chain_snatching=7
+    police_proximity=-10
 
-weighted_array_a = metric_array_x(recency="10", eve_teasing="5", oglingincident="3", taking_pictures="4", catcalls="4",
-                                  commenting="3", rape="10", indecent_exposure="6", groping="8", sexual_invites="6",
-                                  poor_lighting="5", chain_snatching="7", police_proximity="-10")
+#incident_desc_x = namedtuple("incident_desc_x", "recency incident_type distance_from_police incident.recency incident.eve_teasing incident.ogling "
+#                                          "incident.taking_pictures incident.catcalls incident.commenting incident.rape"
+ #                                         "incident.indecent_exposure incident.groping incident.sexual_invites "
+  #                                        "incident.poor_lighting incident.chain_snatching")
 
-incident_desc_x = namedtuple("incident_desc_x", "recency incident_type distance_from_police incident.recency incident.eve_teasing incident.ogling "
-                                          "incident.taking_pictures incident.catcalls incident.commenting incident.rape"
-                                          "incident.indecent_exposure incident.groping incident.sexual_invites "
-                                          "incident.poor_lighting incident.chain_snatching")
+print(Weights.recency)
 
+PROXIMITY = 500
+
+def get_x_vals(lat, lng):
+    print(get_incidents_near_location(lat, lng, PROXIMITY))
 
 def calculate_risk():
     pass
+
+get_x_vals(0,0)
