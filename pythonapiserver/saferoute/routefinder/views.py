@@ -3,6 +3,7 @@ import json
 from django.http import HttpResponse
 from incidentapi.controllers import get_incidents_near_location
 import time
+import math
 
 
 """
@@ -84,7 +85,38 @@ def add_risk_element_to_result(html):
 
     return complete_response
 
+PADDING = 100
+
+
+def create_polygon_wrapper(points):
+    results = []
+    for i in range(1, len(points)-1):
+        previous = points[i-1]
+        current = points[i]
+        after = points[i+1]
+
+        prev_theta = math.atan2(previous[1]-current[1], previous[0]-current[0])
+        next_theta = math.atan2(after[1]-current[1], after[0]-current[0])
+
+        bisector_theta = (prev_theta + next_theta)/2
+
+        new_p = [[PADDING * math.cos(bisector_theta), PADDING * math.sin(bisector_theta)],
+                 [PADDING * math.cos(bisector_theta + math.pi), PADDING * math.sin(bisector_theta + math.pi)]]
+
+        for p in range(len(new_p)):
+            new_p[p][0] += current[0]
+            new_p[p][1] += current[1]
+
+        results.append(new_p[0])
+        results.insert(0, new_p[1])
+
+        return results
+
 
 def average_out_path(start_lat, start_lng, end_lat, end_lng):
     #for now we assume paths are mostly straight and use it's linear mean
     return [(start_lat + end_lat)/2, (start_lng + end_lng)/2]
+
+
+points = [(-4, 4), (-2, 0), (1, -4)]
+print(create_polygon_wrapper(points))
