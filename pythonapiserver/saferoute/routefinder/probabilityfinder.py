@@ -1,6 +1,6 @@
 from collections import namedtuple
-from enum import Enum
-from models import Incident
+from incidentapi.controllers import get_incidents_near_location
+import math
 
 """
    we calculate the risk, also referred to as the probability of incident occurring at a given co-ordinate
@@ -28,51 +28,67 @@ from models import Incident
 
 """
 
+#class Weights:
+#    recency=10
+#    eve_teasing=5
+#    oglingincident=3
+#    taking_pictures=4
+#    catcalls=4
+#    commenting=3
+#    rape=10
+#    indecent_exposure=6
+#    groping=8
+#    sexual_invites=6
+#    poor_lighting=5
+#    chain_snatching=7
+#    police_proximity=-10
 
-#incident = Enum('incident', 'recency eve_teasing ogling taking_pictures catcalls commenting rape indecent_exposure'
-#                'groping sexual_invites poor_lighting chain_snatching')
-#
-#print(incident)
-#
-#metric_array_x = namedtuple("metric_array_x", "recency " + incident.eve_teasing +" "+ incident.ogling+" "+
-#                                              incident.taking_pictures+" "+incident.catcalls+" "+incident.commenting+" "+
-#                                              incident.rape+" "+incident.indecent_exposure+" "+incident.groping+" "+
-#                                              incident.sexual_invites+" "+incident.poor_lighting+" "+incident.chain_snatching+" "+
-#                                              police_proximity)
-#
-#weighted_array_a = metric_array_x(recency="10", eve_teasing="5", oglingincident="3", taking_pictures="4", catcalls="4",
-#                                  commenting="3", rape="10", indecent_exposure="6", groping="8", sexual_invites="6",
-#                                  poor_lighting="5", chain_snatching="7", police_proximity="-10")
-#
+weights_dict = {u'Whistling': 2, u'Sexual Invites': 6, u'Poor / No Street Lighting': 5, u'Catcalls/Whistles': 2, u'Molestation': 7, u'Ogling/Facial Expressions': 4, u'Commenting': 3, u'Indecent exposure': 6, u'Rape / Sexual Assault': 10, u'Chain Snatching': 7, u'Eve teasing': 5, u'Touching /Groping': 6, u'Taking pictures': 4, u'Gold snatch ': 5, u'Rape': 10, u'Theft ': 7}
 
-class Weights:
-    recency=10
-    eve_teasing=5
-    oglingincident=3
-    taking_pictures=4
-    catcalls=4
-    commenting=3
-    rape=10
-    indecent_exposure=6
-    groping=8
-    sexual_invites=6
-    poor_lighting=5
-    chain_snatching=7
-    police_proximity=-10
+def print_unique_keys():
+    incident_types={}
+    incidents = get_incidents_near_location(0, 0, 500)
+    for incident in incidents:
+        all_incident_type = incident.to_dict()["incident_types"]
+        if all_incident_type:
+            all_incident_type = incident.to_dict()["incident_types"].split(',')
+            for incident_type in all_incident_type:
+                if incident_type not in incident_types:
+                    incident_types[incident_type]=0
 
-#incident_desc_x = namedtuple("incident_desc_x", "recency incident_type distance_from_police incident.recency incident.eve_teasing incident.ogling "
-#                                          "incident.taking_pictures incident.catcalls incident.commenting incident.rape"
- #                                         "incident.indecent_exposure incident.groping incident.sexual_invites "
-  #                                        "incident.poor_lighting incident.chain_snatching")
+    print(incident_types)
 
-print(Weights.recency)
-
-PROXIMITY = 500
-
-def get_x_vals(lat, lng):
-    print(get_incidents_near_location(lat, lng, PROXIMITY))
+#print(Weights.recency)
 
 def calculate_risk():
     pass
 
-get_x_vals(0,0)
+def weight_to_prob(y):
+    shift = 2000
+    scale=500
+    return 1/(1 + math.exp(-((y-shift)/scale)))
+
+def calc_incident_weight(incidents):
+    total_incident_weight = 0
+    incident_types={}
+    for incident in incidents:
+        all_incident_type = incident.to_dict()["incident_types"]
+        if all_incident_type:
+            all_incident_type = all_incident_type.split(',')
+            for incident_type in all_incident_type:
+                if incident_type in weights_dict:
+                    total_incident_weight += weights_dict[incident_type]
+    return total_incident_weight
+
+def calc_probability(incidents):
+    print(incidents)
+    return weight_to_prob(calc_incident_weight(incidents))
+
+
+#incidents = get_incidents_near_location(0, .000000001, PROXIMITY)
+
+#print(incidents)
+
+#print(calc_incident_weight(incidents))
+#print(calc_probability(incidents))
+

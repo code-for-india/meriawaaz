@@ -3,7 +3,7 @@ import json
 from django.http import HttpResponse
 from incidentapi.controllers import get_incidents_near_location
 import time
-
+from routefinder.probabilityfinder import calc_probability
 
 """
     Methods to find route and populate with warnings.
@@ -67,7 +67,7 @@ def add_risk_element_to_result(html):
             incidents = get_incidents_near_location(avg_loc[0], avg_loc[1], DEFAULT_PROXIMITY)
             for incident in incidents:
                 mod_incidents.append(incident.to_dict())
-            step_risk = len(incidents)
+            step_risk = calc_probability(incidents)
             step_risks.append({"lat": avg_loc[0], "lng": avg_loc[1], "risk": step_risk})
             step_incidents.append({"lat": avg_loc[0], "lng": avg_loc[1], "incidents": mod_incidents})
             total_route_risk += step_risk
