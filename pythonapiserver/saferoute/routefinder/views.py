@@ -15,7 +15,6 @@ DIRECTION_BASE_URL = 'http://maps.googleapis.com/maps/api/directions/json?sensor
 # Set default proximity to 1km.
 DEFAULT_PROXIMITY = 500
 
-
 def directions(request):
     origin = request.GET.get('origin')
     destination = request.GET.get('destination')
