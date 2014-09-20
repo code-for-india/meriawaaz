@@ -1,4 +1,5 @@
 #!/bin/sh
+git pull
 if  type "virtualenv" > /dev/null 2>&1; then
   echo "=============Setting environment============"
   virtualenv myenvironment
