@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en" manifest="saferoute.appcache">
-    <head>
+    <head> 
         <title>Safe Route</title>
 
         <meta charset="utf-8" />
@@ -69,9 +69,9 @@
                             <td style="text-align: center;" id="walking">
                                 <img src="static/images/walkSelected/walk_selected.jpg" width="35"  height="34" onclick="selectTravelMode('walking');"/>
                             </td>
-                            <td style="text-align: center" id="BICYCLING">
+                            <!--td style="text-align: center" id="BICYCLING">
                                 <img src="static/images/bikeSelected/bike_selected.jpg" width="35" onclick="selectTravelMode('BICYCLING');"/>
-                            </td>                         
+                            </td-->                         
 
                         </tr>
                     </table>
@@ -139,7 +139,7 @@
 
                 </div>
                 
-                <!-- div id="directions" style="margin:0 auto; width:250px;" data-role="controlgroup" data-type="horizontal">
+                <div id="directions" style="margin:0 auto; width:250px;margin-top: 15px" data-role="controlgroup" data-type="horizontal">
 
                     <table> <tr><td>
                                 <button id="submit">Directions</button>
@@ -149,24 +149,57 @@
                             </td>
                         </tr>
                     </table>
-                </div --> 
-                <div class="ui-loader ui-corner-all ui-body-a ui-loader-default"><span class="ui-icon ui-icon-loading"></span><h1>loading</h1></div>
-                <br/>
+                </div> 
+                <!--<div class="ui-loader ui-corner-all ui-body-a ui-loader-default"><span class="ui-icon ui-icon-loading"></span><h1>loading</h1></div>-->
+                
 
                 <div class="ui-bar-c ui-corner-all ui-shadow">
                     <div   id="saferoute_map_canvas"  ></div >
                 </div>
-                <image src="static/images/red_handle.png" id="red_handle"  width="100%" height="8px" style="display: none"/>
+                <!-- image src="static/images/red_handle.png" id="red_handle"  width="100%" height="8px" style="display: none"/ -->
                 <div id="numIncidents">
                 </div>
-              
-                    <div id="routeDirections" >
-                         
-                    </div>
+              <div id="showTimeDis" style="display: none;padding-top:10px">
+                  <span style="float:left" >
+                       <table>
+                            <tr>
+                                <td><div id="timeDist" onclick="window.location = '#directionsPage'"/></td>
+                            </tr>
+                        </table>                  
+                  </span>
+                   <span>
+                       <img  src="static/images/double_arrow.png" width="15px"  height="15px" style="float:right;padding-top: 5px;padding-right: 5px" onclick="window.location = '#directionsPage'"> 
+                    </span>
+              </div>
+                    
                                    
 
             </div>
 
+        </div>
+        
+        <div id="directionsPage" data-role="page" >
+           <div data-role="header" style="background: #000000">
+                <div>
+                    <!--<a href='javascript:history.back();' data-rel="back">Back</a>-->
+                    <span style="float: left">
+                        <table>
+                            <tr>
+                                <td><img src="static/images/logo_favicon_subpage/logo_subpage.png" onclick="javascript:history.back();" width="30"/></td>
+                                <td style="padding-top: 10px" onclick="javascript:history.back();"> <span style="font-size:20px ;font-style: italic">Safe</span><span style="font-size:20px ;">Route</span></td>
+                            </tr>
+                        </table> 
+                    </span>
+                    <span>
+                        <img src="static/images/plus.png" style="float:right;padding-top: 5px" onclick="window.location = '#report_form'">
+                    </span>
+                </div>
+            </div>
+            <div data-role="content" data-theme="d">
+               <div id="routeDirections" >
+
+               </div> 
+            </div>
         </div>
         <div id="report_form" data-role="page">
             <div data-role="header" style="background: #000000">
@@ -181,7 +214,25 @@
             </div> 
             <div data-role="content" data-theme="d">
                 <div> <strong>Incident Type </strong></div>
-                <div id="incidence"> <input type="text"  required/> </div>
+                <div>
+                    <select name="incidentTypes" id="incidence">
+                    <option value="recency">Recency</option>
+                    <option value="eve_teasing">Eve teasing</option>
+                    <option value="oglingincident">Ogling</option>
+                    <option value="taking_pictures">Taking pictures</option>
+                    <option value="catcalls">Cat calls</option>
+                    <option value="commenting">Commenting</option>
+                    <option value="rape">Rape</option>
+                    <option value="indecent_exposure">Indecent exposure</option>
+                    <option value="groping">Groping</option>
+                    <option value="sexual_invites">Sexual invites</option>
+                    <option value="poor_lighting">Poor lighting</option>
+                    <option value="chain_snatching">Chain snatching</option>
+                    <option value="police_proximity">Police proximity</option>
+                    <option value="others">Others</option>
+               </select> 
+                
+ <!--input type="text"  id="otherIncidenceType" style="display:none" required/--> </div>
                 <div style="padding-top: 5px; font-weight: bold"> Location </div>
                 <!--<div> <Input type="text" placeholder="Current Location"/> </div>-->
                 <div style="padding-top: 10px; font-weight: bold"><span><img src="static/images/google-maps-logo.jpg" width="30px" height="30px" onclick="window.location = '#report_page'"/></span> Select on map </div>
