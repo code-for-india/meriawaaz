@@ -61,8 +61,7 @@
                  $("#submit-button").off("click");
                 $("#submit-button").on("click", function() {
                     $("#repStatus").text("");
-                    document.getElementById("incidence");
-                   /* if($("#incidence").find("input").val().trim().length == 0) {
+                    /* if($("#incidence").find("input").val().trim().length == 0) {
                       $("#repStatus").text("Missing incidence type"); 
                       $("#repStatus").css("color","red");
                     } */ 
@@ -204,7 +203,7 @@
 
             $(document).live("pagebeforeshow", "#map_page", function() {
                
-                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 1.5});
+                $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.1});
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
 
             });
@@ -266,9 +265,9 @@
                         }
                     }
                 });
-                setTimeout(function() {
+                /*setTimeout(function() {
                     google.maps.event.trigger(map, 'resize');
-                }, 700);
+                }, 700);*/
                 var fromAddr = new google.maps.places.Autocomplete(document.getElementById('from'),{ types: ['geocode'] });
                 var toAddr = new google.maps.places.Autocomplete(document.getElementById('to'),{ types: ['geocode'] });
                 fromAddr.bindTo('bounds', map); 
@@ -307,8 +306,7 @@
             function highLightTravelMode(travelMode) {
                 $("#driving").css("border-bottom", "");
                 $("#walking").css("border-bottom", "");
-                $("#TRANSIT").css("border-bottom", "");
-                $("#BICYCLING").css("border-bottom", "");
+                $("#transit").css("border-bottom", "");
                 $(travelMode).css("border-bottom", "4px solid blue");
             }
 
@@ -319,21 +317,14 @@
              */
             function calculateRoute() {
                 clearIncidenceCir();
+                 $("#invAddr").text("");
                 var origin, destination;
                 //select the travel mode and route type.
                 if (typeof travelMode == 'undefined') {
                     travelMode = "driving";
                 }
-                if (typeof routeType == 'object') {
-                    if (document.getElementById("routeType").value === "safe") {
-                        routeType = safeRouteIndex;
-                    } else {
-                        routeType = fastRouteIndex;
-                    }
-                    console.log("Travel mode chosen "+travelMode);
-                    console.log("Route type chosen "+routeType);
-                   
-                }
+                
+
                 //select the travel mode on the top.
                 highLightTravelMode("#" + travelMode);
                 //fetch the destination.
@@ -342,12 +333,12 @@
                     currentPosition = $("#from").val();
                     geoCode(currentPosition, function(latLng) {
                         origin = latLng;
-                        plotSafeRoute(origin, targetDestination, routeType);
+                        plotSafeRoute(origin, targetDestination);
 
                     });
                 } else {
                     origin = safeRouteLat + "," + safeRouteLng;
-                    plotSafeRoute(origin, targetDestination, routeType);
+                    plotSafeRoute(origin, targetDestination);
                 }
             }
 
@@ -356,7 +347,9 @@
              * @returns {undefined}
              */
             var prevCustomMap, startMarker, stopMarker, travelMode;
-            function plotSafeRoute(origin, targetDestination, routeType) {
+            function plotSafeRoute(origin, targetDestination) {
+                console.log("Travel mode chosen "+travelMode);
+                
                 triggerCount = 0;
                 geoCode(targetDestination, function(targetlatLng) {
                     
@@ -369,10 +362,16 @@
                    
                    $.mobile.showPageLoadingMsg();             
                    $(".ui-loader-default").remove()
-
+                   
                     $.get(route, function(data) {
+                      $.mobile.hidePageLoadingMsg(); 
+                      if(data.status !== "ZERO_RESULTS") {
+                        findShortDist(data);
+                        findSafeRoute(data);
+                        var routeType = getRouteType();                        
+                        console.log("Route type chosen (safe or time) index "+routeType); 
                         points = parseRoute(data, routeType);
-                        $.mobile.hidePageLoadingMsg();
+                        
 //                        $.mobile.loading('hide');
                         triggerCount = 0;
                         var customPath = new google.maps.Polyline({
@@ -420,9 +419,11 @@
                        $("#showTimeDis").show();
                        $("#saferoute_map_canvas").css({height: $("#basic_map").height() / 2.2});
                        //$("#red_handle").show();
-
+                      } else {
+                        $("#invAddr").text("Invalid source or destination");
+                      }
                     }, 'json');
-
+                 
 
                 });
             }
@@ -455,7 +456,6 @@
                     
 //                jLegs = routes[i].legs
                 console.log("Total routes "+routes.length);
-                console.log("Route type" + routeType);
                 jLegs = routes[routeType].legs
                 /** Traversing all legs */
                 for (j in jLegs) {
@@ -480,8 +480,7 @@
                     $("#timeDist").text("Time: "+totTime+" min and Distance: "+totDist + " km");
                 }
 //                  }
-                findShortDist(data);
-                findSafeRoute(data);
+                
                 if (document.getElementById("unsafeRoute").value === "on") {
                     plotIncidence(data, routeType);
                 }
@@ -505,6 +504,7 @@
                 }
 
                 fastRouteIndex = distArray.indexOf(Math.min.apply(null, distArray));
+            
                 console.log("Fast route time " + Math.min.apply(null, distArray));
                 console.log("Fast route index " + fastRouteIndex);
             }
@@ -535,10 +535,9 @@
                 if(typeof markerCluster != 'undefined') {
                     markerCluster.clearMarkers();
                 }
-                //var incidence = [];
-                 var markers = [];
-                var riskBrk = data.risks[index].risk_breakdown;
-                for (i in riskBrk) {
+               var markers = [];
+               var riskBrk = data.risks[index].risk_breakdown;
+               for (i in riskBrk) {
                     //populate array if there are risks.
                     if (riskBrk[i].risk > 0) {
                         var showIncidence;
@@ -581,9 +580,9 @@
                     url: "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m3.png",
                     width: 53
                     }]};
-                var markerCluster = new MarkerClusterer(map, markers, mcOptions);
+                markerCluster = new MarkerClusterer(map, markers, mcOptions);
                 //$("#numIncidents").html("<strong> Incidents on this route # "+incidence.length+"</strong>");
-                console.log("Number of incidence " + incidence.length);
+                console.log("Number of incidence " + riskBrk.length);
             }
             
              function addIncidentPoints(marker, infoWindow) {
@@ -651,6 +650,15 @@
                 calculateRoute();
             }
             
+            function getRouteType() {
+              var routeType;
+                 if (document.getElementById("routeType").value === "safe") {
+                    routeType = safeRouteIndex;
+                 } else {
+                    routeType = fastRouteIndex;
+                 }
+              return routeType;
+            }
             function showUnsafeRoute() {
                 if (document.getElementById("unsafeRoute").value === "on") {
                     calculateRoute();
