@@ -9,6 +9,7 @@
                 $.ajax({
                     url: "http://maps.googleapis.com/maps/api/geocode/json?address=" + address + "&sensor=false",
                     type: "POST",
+                    async : false,
                     success: function(res) {
                         latLong = res.results[0].geometry.location.lat + "," + res.results[0].geometry.location.lng;
                         callBack(latLong);
@@ -19,7 +20,21 @@
                 });
                 return latLong;
             }
-
+            function reverseGeoCode(lat, lng) {
+                var address = "";
+                $.ajax({
+                    url: "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat+","+lng,
+                    type: "POST",
+                    async : false,
+                    success: function(res) {
+                        address = res.results[0].formatted_address;
+                    },
+                    error: function(responseText) {
+                        console.log(responseText);
+                    }
+                });
+                return address;
+            }
             function initReport(lat, lng) {
                 if (typeof lat != 'undefined' && typeof lng != 'undefined') {
                     currentPosition = new google.maps.LatLng(lat, lng);
@@ -44,7 +59,9 @@
                     repor_map.setCenter(googleLocation);
                 }
 
-
+                var reportLoc = new google.maps.places.Autocomplete(document.getElementById('reportLoc'),{ types: ['geocode'] });
+                reportLoc.bindTo('bounds', repor_map); 
+              
                 //google.maps.event.addDomListener(window, 'load', reportInitialize);
                 google.maps.event.addListener(repor_map, 'click', function(event) {
                     var marker = new google.maps.Marker({
@@ -61,32 +78,32 @@
                  $("#submit-button").off("click");
                 $("#submit-button").on("click", function() {
                     $("#repStatus").text("");
-                    /* if($("#incidence").find("input").val().trim().length == 0) {
-                      $("#repStatus").text("Missing incidence type"); 
-                      $("#repStatus").css("color","red");
-                    } */ 
-                    if(typeof prevMarker === 'undefined') {
-                      $("#repStatus").text("Missing location"); 
-                      $("#repStatus").css("color","red");
-                    }
-                    //var coordinates = prevMarker.getPosition();
+                      if($("#reportLoc").val().trim().length === 0) {
+                         $("#repStatus").text("Missing location"); 
+                         $("#repStatus").css("color","red");
+                      }
+                      var revLatLng;
+                      geoCode($("#reportLoc").val(), function(latLng) {
+                        revLatLng = latLng;
+                    });
+                   
+                      var lati = revLatLng.split(",")[0];
+                      var lngi = revLatLng.split(",")[1];
+                      var pos = new google.maps.LatLng(lati, lngi);
                     geocoder = new google.maps.Geocoder();
-                    geocoder.geocode({'latLng': prevMarker.getPosition()}, function(results, status) {
+                    geocoder.geocode({'latLng': pos}, function(results, status) {
                         if (status === google.maps.GeocoderStatus.OK) {
                           if (results[1]) {
                             repor_map.setZoom(11);
-                            marker = new google.maps.Marker({
-                                position: prevMarker.getPosition(),
-                                map: repor_map
-                            }); 
+                            
                                  var pushJson = '{"image_location":null,"incident_types":"'+$("#incidence").val()+'" ,'+
-                                    '"latitude":"'+prevMarker.getPosition().lat().toString() +'", ' +
+                                    '"latitude":"'+lati+'", ' +
                                      '"risk_index":'+null + ' ,"datetime":"'+currentDT+'",'+
                                       '"description":"'+ $("#description").val() +'",'+
-                                       '"longitude":"'+prevMarker.getPosition().lng().toString()+'",'+
+                                       '"longitude":"'+lngi+'",'+
                                         '"location":"'+results[1].formatted_address +'"}';
                                 console.log(pushJson);
-                             //submitReport(pushJson);
+                             submitReport(pushJson);
                            
                           }  
                         }  
@@ -102,6 +119,7 @@
                     contentType: "application/json;",
                     success: function(response) {
                         $("#repStatus").text("Submitted successfully");
+                         $("#repStatus").css("color","green");
                         console.log("Submitted")
                     },
                      error: function(jqXHR, textStatus, errorThrown) {
@@ -114,14 +132,8 @@
             function initAndAddMarker(marker) {
                 clearReportMarkers();
                 prevMarker = marker;
-                
-//                google.maps.event.addListener(marker, 'click', function(event) {
-//                    currentDT = new Date().toString('yyyy/MM/dd HH:mm');
-//                    $(".date-time-picker-class").datetimepicker({value: currentDT, mask: '9999/19/39 29:59', });
-//                   // location.href = '#report_page';
-//                });
             }
-            ;
+            
 
             function clearReportMarkers() {
                 if (typeof prevMarker != 'undefined') {
@@ -170,6 +182,7 @@
                 var address = document.getElementById('address-box').value;
                 geocoder.geocode({'address': address}, function(results, status) {
                     if (status == google.maps.GeocoderStatus.OK) {
+                        $("#reportLoc").attr("placeHolder", "Incident location ("+results[0].formatted_address+ " )");
                         repor_map.setCenter(results[0].geometry.location);
                         var marker = new google.maps.Marker({
                             map: repor_map,
@@ -191,6 +204,7 @@
             $('#report_page').live('pageinit', function() {
                 navigator.geolocation.getCurrentPosition(locSuccessReport, locErrorReport);
            });
+           
             /////////////////////////////////////Report code ends here.////////////////////////////////
 
             //TODO: Need to integrate both the codes efficiently.
@@ -265,13 +279,13 @@
                         }
                     }
                 });
-                /*setTimeout(function() {
+                setTimeout(function() {
                     google.maps.event.trigger(map, 'resize');
-                }, 700);*/
+                }, 700);
                 var fromAddr = new google.maps.places.Autocomplete(document.getElementById('from'),{ types: ['geocode'] });
                 var toAddr = new google.maps.places.Autocomplete(document.getElementById('to'),{ types: ['geocode'] });
                 fromAddr.bindTo('bounds', map); 
-                 toAddr.bindTo('bounds', map);  
+                toAddr.bindTo('bounds', map);  
                 google.maps.event.addListener(toAddr, 'place_changed', function() {
                    // if(typeof $("#fromAddr").val() !== 'undefined' && $("#fromAddr").val() !== null) {
                  
@@ -300,8 +314,8 @@
             var safeRouteLat, safeRouteLng;
             function locSuccessReport(position) {
                 $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
-                initReport(position.coords.latitude, position.coords.longitude);
-
+                //let store this address as an incident unless user selects something else.
+                initReport(position.coords.latitude, position.coords.longitude);               
             }
             function highLightTravelMode(travelMode) {
                 $("#driving").css("border-bottom", "");

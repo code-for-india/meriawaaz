@@ -213,6 +213,8 @@
                 </span>
             </div> 
             <div data-role="content" data-theme="d">
+             <ul data-role="listview" >
+               <li>
                 <div> <strong>Incident Type </strong></div>
                 <div>
                     <select name="incidentTypes" id="incidence">
@@ -231,14 +233,21 @@
                     <option value="police_proximity">Police proximity</option>
                     <option value="others">Others</option>
                </select> 
-                
- <!--input type="text"  id="otherIncidenceType" style="display:none" required/--> </div>
+                 </div>
+               </li>
+                <li>
                 <div style="padding-top: 5px; font-weight: bold"> Location </div>
-                <!--<div> <Input type="text" placeholder="Current Location"/> </div>-->
-                <div style="padding-top: 10px; font-weight: bold"><span><img src="static/images/google-maps-logo.jpg" width="30px" height="30px" onclick="window.location = '#report_page'"/></span> Select on map </div>
+                <div> <input  id="reportLoc" placeholder="Enter an incident location" type="search"/> </div>
+                </li>
+               <!-- <div style="padding-top: 10px; font-weight: bold"><span><img src="static/images/google-maps-logo.jpg" width="30px" height="30px" onclick="window.location = '#report_page'"/></span> Select on map </div> -->
+                <li>
                 <div style="padding-top: 10px; font-weight: bold"> Time </div>
-                <div> <input class="date-time-picker-class" id="incidenceTime" required/></div><br/>
-                 <div style="padding-top: 5px; font-weight: bold"> What happened ?<textarea id="description" cols="40" name="textarea-1" id="textarea-1" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset"></textarea> </div>
+                <div> <input class="date-time-picker-class" id="incidenceTime" required/></div>
+                </li>
+                <li>
+                 <div style="padding-top: 5px; font-weight: bold"> What happened ?<textarea id="description" cols="40" name="textarea-1" id="textarea-1" class="ui-input-text ui-body-c ui-corner-all ui-shadow-inset"></textarea> </div>          
+                </li>
+               </ul><br/>
                 <div style="margin:0 auto; width:170px;height: 20px;" id="repStatus"></div>
                 <div id="report-submit-button-canvas" style="margin:0 auto; width:200px;" data-role="controlgroup" data-type="horizontal">
                     <table> <tr><td>
