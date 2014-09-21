@@ -105,7 +105,7 @@
                             </td>
                         </tr>
                     </table>
-                    <table style="width:100%;padding-top: 10px" >
+                   <!-- <table style="width:100%;padding-top: 10px" >
                         <tr>
                             <td style="width:50%">
                                 Route type
@@ -117,7 +117,7 @@
                                 </select> 
                             </td>
                         </tr>
-                    </table>
+                    </table> -->
                 </div>
                 <div id="showspace" style="display:none;"><br/><br/></div>
                 <div >
@@ -157,9 +157,22 @@
                     <div   id="saferoute_map_canvas"  ></div >
                 </div>
                 <!-- image src="static/images/red_handle.png" id="red_handle"  width="100%" height="8px" style="display: none"/ -->
-                <div id="numIncidents">
-                </div>
-              <div id="showTimeDis" style="display: none;padding-top:10px">
+                
+ 
+               <div id="directions">	
+                       <table  >
+                            <tr >
+                                <td> <select  data-role="slider" id="routeType" data-theme="c" data-track-theme="b" onchange="calculateRoute();">
+                                    <option value="safe">Safe</option>
+                                    <option value="time">Time</option>                                   
+                                </select> </td>
+                                           
+                     <td width="1%" halign="right">
+                       <img  src="static/images/double_arrow.png" width="15px"  height="15px" style=" cursor: pointer; float:right;padding-top: 5px;padding-left: 100px" onclick="window.location = '#directionsPage'"> </td>
+                    </tr>
+                   </table>  
+              </div>
+              <!-- div id="showTimeDis" style="display: none;padding-top:10px">
                   <span style="float:left" >
                        <table>
                             <tr>
@@ -170,7 +183,7 @@
                    <span>
                        <img  src="static/images/double_arrow.png" width="15px"  height="15px" style=" cursor: pointer; float:right;padding-top: 5px;padding-right: 5px" onclick="window.location = '#directionsPage'"> 
                     </span>
-              </div>
+              </div -->
                     
                                    
 
@@ -194,11 +207,14 @@
                         <img src="static/images/plus.png" style="float:right;padding-top: 5px" onclick="window.location = '#report_form'">
                     </span>
                 </div>
-            </div>
+            </div> 
             <div data-role="content" data-theme="d">
-               <div id="routeDirections" >
-
-               </div> 
+               <table><tr><td><div class="ui-li ui-li-static ui-body-d" id="travelTime" /></td></tr>
+                 <tr><td><div class="ui-li ui-li-static ui-body-d" id="travelDist" /></td></tr>
+                <tr><td><div class="ui-li ui-li-static ui-body-d" id="numIncidents" /></td></tr>
+               <tr><td>
+               <div id="routeDirections" ></td></tr>
+               </div> </table>
             </div>
         </div>
         <div id="report_form" data-role="page">

@@ -491,7 +491,8 @@
                     totTime = Math.round(totTime/60);
                     console.log("Total distance " + (totDist) + " km");
                     console.log("Total time "+ (totTime) + " min");
-                    $("#timeDist").text("Time: "+totTime+" min and Distance: "+totDist + " km");
+                    $("#travelTime").text("Travel time: "+totTime+" minutes");
+                    $("#travelDist").text("Distance: "+totDist + " km");
                 }
 //                  }
                 
@@ -595,8 +596,9 @@
                     width: 53
                     }]};
                 markerCluster = new MarkerClusterer(map, markers, mcOptions);
-                //$("#numIncidents").html("<strong> Incidents on this route # "+incidence.length+"</strong>");
+                $("#numIncidents").text("Incidents reported: "+riskBrk.length);
                 console.log("Number of incidence " + riskBrk.length);
+                $
             }
             
              function addIncidentPoints(marker, infoWindow) {
