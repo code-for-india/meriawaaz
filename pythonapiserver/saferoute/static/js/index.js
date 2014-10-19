@@ -567,6 +567,7 @@ function findSafeRoute(data) {
     }
     //Using javascript mathematical function to find the min of list of risks.
     safeRouteIndex = safeArray.indexOf(Math.min.apply(null, safeArray));
+    console.log("Safe route time " + Math.min.apply(null, safeArray));
     console.log("Safe route index " + safeRouteIndex);
 }
 
@@ -703,9 +704,9 @@ function selectTravelMode(mode) {
 function getRouteType() {
   var routeType;
      if (document.getElementById("routeType").value === "safe") {
-        routeType = safeRouteIndex;
-     } else {
         routeType = fastRouteIndex;
+     } else {
+        routeType = safeRouteIndex;
      }
   return routeType;
 }
