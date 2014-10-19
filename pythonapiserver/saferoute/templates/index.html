@@ -136,16 +136,16 @@
 
                 </div>
                 
-                <div id="directions" style="margin:0 auto; width:250px;margin-top: 15px" data-role="controlgroup" data-type="horizontal">
+                <div id="directions" style="margin:0 auto; width:210px;margin-top: 10px" data-role="controlgroup" data-type="horizontal">
 
                     <table>
                            <tr ><td colspan="2"><div id="invAddr"/></td></tr>
                             <tr>
                             <td>
-                                <button id="directions">Directions</button>
+                                <div data-role="button" id="directions" style="font-size:8pt;">Directions</div>
                             </td>
                             <td>
-                                <button id="clear-button" onclick="location.reload()">Reset</button>
+                                <div data-role="button" id="clear-button" onclick="location.reload()" style="font-size:8pt">Reset</div>
                             </td>
                         </tr>
                     </table>
@@ -159,14 +159,13 @@
                 <!-- image src="static/images/red_handle.png" id="red_handle"  width="100%" height="8px" style="display: none"/ -->
                 
  
-              <div id="routeType">	
+              <div id="routing">	
                        <table  >
                             <tr >
                                 <td> <select  data-role="slider" id="routeType" data-theme="c" data-track-theme="b" onchange="drawDataOnMap();">
                                     <option value="safe">Safe</option>
                                     <option value="time">Time</option>                                   
                                 </select> </td>
-                                           
                      <td width="1%" halign="right">
                        <img  src="static/images/double_arrow.png" width="15px"  height="15px" style=" cursor: pointer; float:right;padding-top: 5px;padding-left: 100px" onclick="window.location = '#directionsPage'"> </td>
                     </tr>

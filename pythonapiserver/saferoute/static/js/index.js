@@ -265,7 +265,7 @@ $('#safe_map').live('pageinit', function() {
 
 /** Executed before the pages are loaded. */
 $(document).live("pagebeforeshow", "#map_page", function() {
-    $("#saferoute_map_canvas").css({height: $("#safe_map").height() / 2.1});
+    $("#saferoute_map_canvas").css({height: $("#safe_map").height() / 2});
     $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
 });
 
@@ -334,7 +334,7 @@ function initSafeRoute(lat, lng) {
 /** Invoked if we encounter issue with safe route location finding. */
 function locErrorSafeRoute(error) {
     $("#from").attr("placeHolder", "Enter current location");
-    $("#saferoute_map_canvas").css({height: $("#safe_map").height() / 2.1});
+    $("#saferoute_map_canvas").css({height: $("#safe_map").height() / 2.0});
      initSafeRoute();
 }
 
@@ -342,7 +342,7 @@ function locErrorSafeRoute(error) {
 function locSuccessSafeRoute(position) {
     $("#from").attr("placeHolder", "Found current location");
     initSafeRoute(position.coords.latitude, position.coords.longitude);
-    $("#saferoute_map_canvas").css({height: $("#safe_map").height() / 2.1});
+    $("#saferoute_map_canvas").css({height: $("#safe_map").height() / 2.0});
 
 }
 
@@ -402,10 +402,10 @@ function plotSafeRoute(origin, targetDestination) {
         $.get(route, function(mapData) {
           $.mobile.hidePageLoadingMsg(); 
           if(mapData.status !== "ZERO_RESULTS") {
-            console.log("================aya")
             data = mapData;
+            findShortDist(data);
+            findSafeRoute(data);
             drawDataOnMap();
-           //$("#red_handle").show();
           } else {
             $("#invAddr").text("Invalid source or destination");
           }
@@ -425,8 +425,7 @@ function drawDataOnMap() {
   if(data != undefined) {
 
     clearIncidenceCir();
-    findShortDist(data);
-            findSafeRoute(data);
+   
             var routeType = getRouteType();                        
             console.log("Route type chosen (safe or time) index "+routeType); 
             points = parseRoute(data, routeType);
@@ -477,7 +476,7 @@ function drawDataOnMap() {
            completeRouteInstructions += '</table>';
            $("#routeDirections").html(completeRouteInstructions);
            $("#showTimeDis").show();
-           $("#saferoute_map_canvas").css({height: $("#safe_map").height() / 2.2});
+           //$("#saferoute_map_canvas").css({height: $("#safe_map").height() / 2.2});
   }
 }
         
@@ -695,6 +694,7 @@ function decodeLine(encoded) {
 
 /** User selecting the travel will trigger this function. */
 function selectTravelMode(mode) {
+    togglePlanPanel();
     travelMode = mode;
     calculateRoute();
 }
