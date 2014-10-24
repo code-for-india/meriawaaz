@@ -2,7 +2,12 @@
 git pull
 echo "=============Setting environment============"
 if ! type "virtualenv" > /dev/null 2>&1; then
-  sudo yum install virtualenv
+  if ! type "yum" > /dev/null 2>&1; then
+  	sudo easy_install pip
+  	sudo pip install virtualenv
+  else
+    sudo yum install virtualenv
+  fi
 fi
   virtualenv myenvironment
   source myenvironment/bin/activate

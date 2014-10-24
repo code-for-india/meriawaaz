@@ -31,14 +31,14 @@
                 <br/>
                  <img id="topImg" src="static/images/SafeRouteTitleHomepage/SafeRoute_homepage.png" width="200" height="30" style="display: block; margin: 0 auto">
                 <br/>
-                <img id="safeR" src="static/images/SafeRouteButtonHomepage/SafeRoute_button_homepage.png" style="display: block; margin: 0 auto" width="300" height="55" onclick="location.href = '#basic_map'"/><br/>
+                <img id="safeR" src="static/images/SafeRouteButtonHomepage/SafeRoute_button_homepage.png" style="display: block; margin: 0 auto" width="300" height="55" onclick="location.href = '#safe_map'"/><br/>
                 <img id="reportRoute" src="static/images/ReportButtonHomepage/Report_button_homepage.png" style="display: block; margin: 0 auto" width="300" height="55" onclick="location.href = '#report_form'"/>
 
             </div>
 
         </div>
 
-        <div id="basic_map" data-role="page">
+        <div id="safe_map" data-role="page">
             <div data-role="header" style="background: #000000">
                 <div>
                     <!--<a href='javascript:history.back();' data-rel="back">Back</a>-->
@@ -105,13 +105,13 @@
                             </td>
                         </tr>
                     </table>
-                   <!-- <table style="width:100%;padding-top: 10px" >
+                  <!-- <table style="width:100%;padding-top: 10px" >
                         <tr>
                             <td style="width:50%">
                                 Route type
                             </td>
                             <td style="width:20%">
-                                <select  data-role="slider" id="routeType" data-theme="c" data-track-theme="b" onchange="calculateRoute();">
+                                <select  data-role="slider" id="routeType" data-theme="c" data-track-theme="b" onchange="drawDataOnMap();">
                                     <option value="safe">Safe</option>
                                     <option value="time">Time</option>                                   
                                 </select> 
@@ -136,16 +136,16 @@
 
                 </div>
                 
-                <div id="directions" style="margin:0 auto; width:250px;margin-top: 15px" data-role="controlgroup" data-type="horizontal">
+                <div id="directions" style="margin:0 auto; width:210px;margin-top: 10px" data-role="controlgroup" data-type="horizontal">
 
                     <table>
                            <tr ><td colspan="2"><div id="invAddr"/></td></tr>
                             <tr>
                             <td>
-                                <button id="submit">Directions</button>
+                                <div data-role="button" id="directions" style="font-size:8pt;">Directions</div>
                             </td>
                             <td>
-                                <button id="clear-button" onclick="location.reload()">Reset</button>
+                                <div data-role="button" id="clear-button" onclick="location.reload()" style="font-size:8pt">Reset</div>
                             </td>
                         </tr>
                     </table>
@@ -159,19 +159,18 @@
                 <!-- image src="static/images/red_handle.png" id="red_handle"  width="100%" height="8px" style="display: none"/ -->
                 
  
-               <div id="directions">	
+              <div id="routing">	
                        <table  >
                             <tr >
-                                <td> <select  data-role="slider" id="routeType" data-theme="c" data-track-theme="b" onchange="calculateRoute();">
+                                <td> <select  data-role="slider" id="routeType" data-theme="c" data-track-theme="b" onchange="drawDataOnMap();">
                                     <option value="safe">Safe</option>
                                     <option value="time">Time</option>                                   
                                 </select> </td>
-                                           
                      <td width="1%" halign="right">
                        <img  src="static/images/double_arrow.png" width="15px"  height="15px" style=" cursor: pointer; float:right;padding-top: 5px;padding-left: 100px" onclick="window.location = '#directionsPage'"> </td>
                     </tr>
                    </table>  
-              </div>
+              </div> 
               <!-- div id="showTimeDis" style="display: none;padding-top:10px">
                   <span style="float:left" >
                        <table>
@@ -194,12 +193,12 @@
         <div id="directionsPage" data-role="page" >
            <div data-role="header" style="background: #000000">
                 <div>
-                    <!--<a href='javascript:history.back();' data-rel="back">Back</a>-->
+                    
                     <span style="float: left">
                         <table>
                             <tr>
                                 <td><img src="static/images/logo_favicon_subpage/logo_subpage.png" onclick="javascript:history.back();" width="30"/></td>
-                                <td style="padding-top: 10px" onclick="javascript:history.back();"> <span style="font-size:20px ;font-style: italic">Safe</span><span style="font-size:20px ;">Route</span></td>
+                                <td style="padding-top: 10px" onclick="javascript:history.back();"> <span style="font-size:20px ;">Back</span></td>
                             </tr>
                         </table> 
                     </span>
