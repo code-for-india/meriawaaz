@@ -5,9 +5,8 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
-from routefinder.views import create_polygon_wrapper
+from routefinder.repository import create_polygon_wrapper
 
-#from django.test import TestCase
 import unittest
 
 
