@@ -5,7 +5,7 @@ import time
 from routefinder.repository import create_polygon_wrapper
 from routefinder.repository import query_incidents_within_polygon
 from routefinder.probabilityfinder import calc_risk_probability
-
+import pdb;
 
 """
     Methods to find route and populate with warnings.
@@ -15,7 +15,11 @@ DIRECTION_BASE_URL = 'http://maps.googleapis.com/maps/api/directions/json?sensor
 
 # width to create the margin around path within which polygon
 # previous incidents would be looked at to calculate risk
-WRAPPER_WIDTH = 100
+
+# this is equivalent ot 0.3 miles or 0.5 KM
+KM_TO_LAT = 1/111.0
+WRAPPER_WIDTH = .5*KM_TO_LAT
+print(WRAPPER_WIDTH)
 
 
 def directions(request):
@@ -49,7 +53,7 @@ def add_incidents_around_area(html):
     complete_response = json.loads(html)
     routes = complete_response["routes"]
     all_route_risks = []
-
+    #   pdb.set_trace()
     for route in routes:
         path = []
         #in our use case since no waypoints are specified google maps will only return on leg
@@ -60,8 +64,11 @@ def add_incidents_around_area(html):
         last_point = route["legs"][0]["steps"][-1]["end_location"]
         point = [last_point["lat"], last_point["lng"]]
         path.append(point)
-
+        #pdb.set_trace()
+        print(path)
+        print('============')
         path_risk_wrapper = create_polygon_wrapper(path, WRAPPER_WIDTH)
+        print(path_risk_wrapper)
         incidents_around_path = query_incidents_within_polygon(path_risk_wrapper)
         route_risk = calc_risk_probability(incidents_around_path)
 

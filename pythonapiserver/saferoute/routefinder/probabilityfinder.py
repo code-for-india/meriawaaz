@@ -51,7 +51,7 @@ weights_dict = {u'Whistling': 2, u'Sexual Invites': 6, u'Poor / No Street Lighti
 #utiltiy method to find what type of incidents are
 #currently reported in our dataset
 def print_unique_keys():
-    incident_types={}
+    incident_types = {}
     incidents = query_all_incidents_in_db()
     for incident in incidents:
         all_incident_type = incident.to_dict()["incident_types"]
@@ -69,9 +69,6 @@ def calc_risk_probability(incidents):
 
 
 def weight_to_prob(y):
-    if y is 0:
-        return 0
-
     shift = 2000
     scale = 500
     return 1/(1 + math.exp(-((y-shift)/scale)))
