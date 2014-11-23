@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 import urllib
-from bs4 import BeautifulSoup
 import re
-from pygeocoder import Geocoder
-from pygeocoder import Geocoder
 import time
 import datetime
 import json
-from routefinder.repository import post_new_incident;
+
+from bs4 import BeautifulSoup
+from pygeocoder import Geocoder
+from pygeocoder import Geocoder
+
 
 TOTAL_PAGES = 196
 

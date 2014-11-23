@@ -5,9 +5,9 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 
-from routefinder.repository import create_polygon_wrapper
-
 import unittest
+
+from incidentapi.repository import create_polygon_wrapper
 
 
 class RouteFinderTests(unittest.TestCase):

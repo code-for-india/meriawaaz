@@ -1,5 +1,7 @@
 import math
-from repository import query_all_incidents_in_db
+
+from incidentapi.repository import query_all_incidents_in_db
+
 
 """
    we calculate the risk, also referred to as the probability of incident occurring at a given co-ordinate
@@ -69,7 +71,7 @@ def calc_risk_probability(incidents):
 
 
 def weight_to_prob(y):
-    #the following coefficients have been heuristically choosen
+    #the following coefficients have been heuristically chosen
     shift = 2000
     scale = 500
     risk = round(1/(1 + math.exp(-((y-shift)/scale))), 1)
@@ -85,6 +87,7 @@ def calc_incident_weight(incidents):
             for incident_type in all_incident_type:
                 if incident_type in weights_dict:
                     total_incident_weight += weights_dict[incident_type]
+    # print("total_incident_weight: " + str(total_incident_weight))
     return total_incident_weight
 
 
