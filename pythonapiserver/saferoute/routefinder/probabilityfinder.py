@@ -69,9 +69,11 @@ def calc_risk_probability(incidents):
 
 
 def weight_to_prob(y):
+    #the following coefficients have been heuristically choosen
     shift = 2000
     scale = 500
-    return 1/(1 + math.exp(-((y-shift)/scale)))
+    risk = round(1/(1 + math.exp(-((y-shift)/scale))), 1)
+    return risk
 
 
 def calc_incident_weight(incidents):
