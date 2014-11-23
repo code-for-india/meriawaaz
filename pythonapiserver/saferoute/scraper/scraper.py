@@ -1,22 +1,18 @@
 #!/usr/bin/env python
-import os
-import sys
 import urllib
 from bs4 import BeautifulSoup
-from bs4 import SoupStrainer
 import re
 from pygeocoder import Geocoder
 from pygeocoder import Geocoder
 import time
 import datetime
 import json
-from incidentapi.models import Incident, IncidentManager
+from routefinder.repository import post_new_incident;
 
-TOTAL_PAGES = 144
+TOTAL_PAGES = 196
 
 def main():
-  incidents = []
-  i_manager = IncidentManager()
+
   for x in range(1, TOTAL_PAGES):
     url = "http://safecity.in/reports/fetch_reports?page=%i" % x
     print "url is" + url + "\n\n\n"
@@ -45,9 +41,16 @@ def main():
       report_data['location'] = location.string
       try:
         location_results = Geocoder.geocode(location)
+
         latitude,longitude = location_results[0].coordinates
-        report_data['latitude'] = latitude
-        report_data['longitude'] = longitude
+
+        geometry = {}
+        geometry['type'] = 'Point'
+        geometry['coordinates'] = [latitude, longitude]
+        # report_data['latitude'] = latitude
+        # report_data['longitude'] = longitude
+        report_data['geometry'] = geometry
+
       except:
         print "Geocode error"
 
@@ -57,9 +60,11 @@ def main():
         datetime.datetime.strptime(datestring, "%H:%M %b %d, %Y").timetuple())
       report_data['incident_time'] = int(datetimestamp)
 
-      print report_data
-      incident = i_manager.load_from_dict(report_data)
-      incident.save()
+      json_data = json.dumps(report_data)
+
+      #print(json_data)
+      # uncomment below to write to database
+      #post_new_incident(report_data)
 
 
 

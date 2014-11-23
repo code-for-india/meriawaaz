@@ -12,7 +12,7 @@ collection = db.test2
 
 def post_new_incident(post_sql):
     post_id = collection.insert(post_sql)
-    print("incident posted with id" + post_id)
+    #print("incident posted with id" + post_id)
 
 
 def query_all_incidents_in_db():
