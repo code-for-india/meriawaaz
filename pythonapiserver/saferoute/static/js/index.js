@@ -16,7 +16,7 @@
     $.ajax({
         url: "http://maps.googleapis.com/maps/api/geocode/json?address=" + address + "&sensor=false",
         type: "POST",
-        async : false,
+        async: false,
         success: function(res) {
           if(res.results.length > 0) {
             latLong = res.results[0].geometry.location.lat + "," + res.results[0].geometry.location.lng;
@@ -38,7 +38,7 @@ function reverseGeoCode(lat, lng) {
     $.ajax({
         url: "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat+","+lng,
         type: "POST",
-        async : false,
+        async: false,
         success: function(res) {
           if(res.results.length > 0) {
             address = res.results[0].formatted_address;
@@ -53,91 +53,12 @@ function reverseGeoCode(lat, lng) {
 //End of common utility.
 /****************************************************************************************************************************************************/
 /** 1. Report an unsafe location. */
-var currentPosition,report_map, autocomplete, geocoder;
+var currentPosition,autocomplete;
 var prevMarker, currentDT;
 //Fallback location if geo is disabled.
 var googleLocation = new google.maps.LatLng(37.421942, -122.08450);
 
-/** Initialize the map. */
-function initReport(lat, lng) {
-    if (lat != undefined &&  lng != undefined) {
-        //convert lat, long into LatLng object.
-        currentPosition = new google.maps.LatLng(lat, lng);
-        /** Create map params, to display zoom and travel mode. */
-        var myOptions = {
-            zoom: 17,
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            center: currentPosition
-        }
-        //guard, from crashing in safari browser.
-        if (report_map == undefined) {
-            report_map = new google.maps.Map(document.getElementById("report-map-canvas"), myOptions);
-        } else {
-            report_map.setCenter(currentPosition);
-        }
-    } else {
-        var myOptions = {
-            zoom: 17,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        }
-        report_map = new google.maps.Map(document.getElementById("report-map-canvas"), myOptions);
-        report_map.setCenter(googleLocation);
-    }
-    /** Auto pop-up of locations. */
-    var reportLoc = new google.maps.places.Autocomplete(document.getElementById('reportLoc'),{ types: ['geocode'] });
-    reportLoc.bindTo('bounds', report_map); 
-    /** Events on map. */
-    google.maps.event.addListener(report_map, 'click', function(event) {
-        var marker = new google.maps.Marker({
-            map: report_map,
-            draggable: true,
-            position: event.latLng,
-        });
-        initAndAddMarker(marker);
-    });
-    /** There are loading issue on iPhone to fix it we have set the timeout. */
-    setTimeout(function() {
-        google.maps.event.trigger(report_map, 'resize');
-        initializeReport();
-    }, 700);
 
-    /** Registering the events. */
-     $("#submit-button").off("click");
-    $("#submit-button").on("click", function() {
-        $("#repStatus").text("");
-          if($("#reportLoc").val().trim().length === 0) {
-             $("#repStatus").text("Missing location"); 
-             $("#repStatus").css("color","red");
-          }
-          var revLatLng;
-          geoCode($("#reportLoc").val(), function(latLng) {
-            revLatLng = latLng;
-        });
-       
-          var lati = revLatLng.split(",")[0];
-          var lngi = revLatLng.split(",")[1];
-          var pos = new google.maps.LatLng(lati, lngi);
-        geocoder = new google.maps.Geocoder();
-        geocoder.geocode({'latLng': pos}, function(results, status) {
-            if (status === google.maps.GeocoderStatus.OK) {
-              if (results[1]) {
-                report_map.setZoom(11);
-                
-                     var pushJson = '{"image_location":null,"incident_types":"'+$("#incidence").val()+'" ,'+
-                        '"latitude":"'+lati+'", ' +
-                         '"risk_index":'+null + ' ,"datetime":"'+currentDT+'",'+
-                          '"description":"'+ $("#description").val() +'",'+
-                           '"longitude":"'+lngi+'",'+
-                            '"location":"'+results[1].formatted_address +'"}';
-                    console.log(pushJson);
-                 submitReport(pushJson);
-               
-              }  
-            }  
-          });
-        
-    }); //end of registration of events.
-}
 
 /**
 * Submit a report.
@@ -159,87 +80,53 @@ function submitReport(json) {
       });
 }   
 
-/**
-* Initialize marker of the incident.
-*/            
-function initAndAddMarker(marker) {
-    clearReportMarkers();
-    prevMarker = marker;
-}
-            
-/** Deletes any marker if present. */
-function clearReportMarkers() {
-    if (prevMarker != undefined) {
-        prevMarker.setMap(null);
-    }
-}
-
-/**  Initialize map for reporting. */
-function initializeReport() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            var pos = new google.maps.LatLng(position.coords.latitude,
-                    position.coords.longitude);
-            report_map.setCenter(pos);
-        }, function() {
-            report_map.setCenter(googleLocation);
-        });
-    } else {
-        // Browser doesn't support Geolocation
-        report_map.setCenter(googleLocation);
-    }
-    //auto complete for entering address.
-    autocomplete = new google.maps.places.Autocomplete((document.getElementById('address-box')), {types: ['geocode']});
-    // Register event.
-    google.maps.event.addListener(autocomplete, 'place_changed', function() {
-        dropPin();
-    });
-}
 
 
-/** Drop a ping once the address is typed. */
-function dropPin() {
-    var address = document.getElementById('address-box').value;
-    geocoder.geocode({'address': address}, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-            $("#reportLoc").attr("placeHolder", "Incident location ("+results[0].formatted_address+ " )");
-            report_map.setCenter(results[0].geometry.location);
-            var marker = new google.maps.Marker({
-                map: report_map,
-                draggable: true,
-                position: results[0].geometry.location
-            });
-            initAndAddMarker(marker);
-        } else {
-            alert('Geocode was not successful for the following reason: ' + status);
-        }
-        $('#address-box').val('');
-    });
-}
 
 /**  Initializing report page. */
 $('#report_form').live('pageinit', function() {
     currentDT = new Date().toString('yyyy/MM/dd HH:mm');
+    $("#description").val("");
     $(".date-time-picker-class").datetimepicker({value: currentDT, mask: '9999/19/39 29:59', });
-     navigator.geolocation.getCurrentPosition(locSuccessReport, locErrorReport);
+    new google.maps.places.Autocomplete(document.getElementById('reportLoc'),{ types: ['geocode'] });
+    /** Registering the events. */
+     $("#submit-button").off("click");
+    $("#submit-button").on("click", function() {
+        $("#repStatus").text("");
+          if($("#reportLoc").val().trim().length === 0) {
+             $("#repStatus").text("Missing location"); 
+             $("#repStatus").css("color","red");
+          }
+          var revLatLng;
+          geoCode($("#reportLoc").val(), function(latLng) {
+            revLatLng = latLng;
+        });
+       var incidentEpoch = new Date(currentDT).getTime() / 1000.0;
+       var lati = revLatLng.split(",")[0];
+       var lngi = revLatLng.split(",")[1];
+       var pos = new google.maps.LatLng(lati, lngi);
+        geocoder = new google.maps.Geocoder();
+        geocoder.geocode({'latLng': pos}, function(results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+              if (results[1]) {
+                     var pushJson = '{"image_location":"", "incident_time":'+incidentEpoch+
+                     ',"uid":"","title":"", "risk_index":"", "updated_at": {"datetime":"'+currentDT+'"}, '+
+                       '"geometry": {"type": "Point", "coordinates":['+lati+','+lngi+'] },'+
+                          '"location":"'+results[1].formatted_address +'","incident_types":"'+$("#incidence").val()+'",'+
+                           '"created_at": {"datetime":"'+currentDT+'"},'+
+                           '"description": "'+$("#description").val()+'" }';
+                    console.log(pushJson);
+                 submitReport(pushJson);
+               
+              }  
+            }  
+          });
+    });
 });
 
-/** Report page initilization. */
-$('#report_page').live('pageinit', function() {
-    navigator.geolocation.getCurrentPosition(locSuccessReport, locErrorReport);
-});
 
-/** Invoked if we encounter issue with report location finding. */
-function locErrorReport(error) {
-    $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
-    initReport();
-}
-/** Invoked if we find location successfully. */
-function locSuccessReport(position) {
-    $("#report-map-canvas").css({height: $("#report_page").height() / 1.6});
-    //let store this address as an incident unless user selects something else.
-    initReport(position.coords.latitude, position.coords.longitude);               
-}
+
+
 /****************************************************************************************************************************************************/
 /////////////////////////////////////Report code ends here.////////////////////////////////
 
@@ -327,7 +214,7 @@ function initSafeRoute(lat, lng) {
     toAddr.bindTo('bounds', safeRouteMap);  
     google.maps.event.addListener(toAddr, 'place_changed', function() {
     calculateRoute();
-  });
+  }); 
 
 }
 
@@ -389,29 +276,36 @@ function calculateRoute() {
  */
 function plotSafeRoute(origin, targetDestination) {
     console.log("Travel mode chosen "+travelMode);
-    
     geoCode(targetDestination, function(targetlatLng) {
-        
-        
         //Get the JSON messages by sending lat, lrng
        var route = "/directions?origin="+origin+"&destination="+targetlatLng+"&mode="+travelMode;
-       
-       $.mobile.showPageLoadingMsg();             
+       console.log("URL "+route);
+       $.mobile.showPageLoadingMsg();    
+               $.ajax({
+                    url: route,
+                    dataType: 'json',
+                    type: 'GET',
+                    timeout: 6000,
+                    success: function(mapData){
+                       $.mobile.hidePageLoadingMsg(); 
+                      if(mapData.status !== "ZERO_RESULTS") {
+                        data = mapData;
+                        findShortDist(data);
+                        findSafeRoute(data);
+                        drawDataOnMap();
+                      } else {
+                        $("#invAddr").text("Invalid source or destination");
+                      }  
+                    },
+                    error: function(objRequest, errortype) {
+                         $.mobile.hidePageLoadingMsg(); 
+                        if (errortype == 'timeout') {
+                           $("#invAddr").text("Connection failure");
+                        }
+                    }
+                });
+                
        $(".ui-loader-default").remove()
-       
-        $.get(route, function(mapData) {
-          $.mobile.hidePageLoadingMsg(); 
-          if(mapData.status !== "ZERO_RESULTS") {
-            data = mapData;
-            findShortDist(data);
-            findSafeRoute(data);
-            drawDataOnMap();
-          } else {
-            $("#invAddr").text("Invalid source or destination");
-          }
-        }, 'json');
-     
-
     });
 }
 
@@ -428,17 +322,20 @@ function drawDataOnMap() {
    
             var routeType = getRouteType();                        
             console.log("Route type chosen (safe or time) index "+routeType); 
-            points = parseRoute(data, routeType);
+            var highLightPath = parseRoute(data, routeType);
+            console.log("Chosen index "+routeType);
             /** Map line display params. */
             var customPath = new google.maps.Polyline({
-                path: points,
+                path: highLightPath,
                 geodesic: true,
-                strokeColor: '#0000FF',
+                strokeColor: '#0000E6',
                 strokeOpacity: 0.5,
                 strokeWeight: 5
             });
 
             customPath.setMap(safeRouteMap);
+
+   
             prevCustomMap = customPath;
             //Clearing markers if already exist.
             if (startMarker != undefined) {
@@ -449,13 +346,13 @@ function drawDataOnMap() {
             }
             //creating stop marker.
             stopMarker = new google.maps.Marker({
-                position: points[points.length - 1],
+                position: highLightPath[highLightPath.length - 1],
                 map: safeRouteMap,
                 icon: 'http://maps.gstatic.com/mapfiles/markers2/marker_greenB.png'
             });
             //creating start marker.
             startMarker = new google.maps.Marker({
-                position: points[0],
+                position: highLightPath[0],
                 map: safeRouteMap,
                 icon: 'http://maps.gstatic.com/mapfiles/markers2/marker_greenA.png'
             });
@@ -495,7 +392,6 @@ function togglePlanPanel() {
 /**
  * Parse the route.
  * @param {type} encoded
- * @returns {Array|decodeLine.array}
  */
 function parseRoute(data, routeType) {
     directionInstructions= [];
@@ -563,7 +459,7 @@ function findSafeRoute(data) {
     var safeArray = [];
     var risks = data.risks;
     for (i in risks) {
-        safeArray.push(risks[i].total_risk);
+        safeArray.push(risks[i].map_incidents.length);
     }
     //Using javascript mathematical function to find the min of list of risks.
     safeRouteIndex = safeArray.indexOf(Math.min.apply(null, safeArray));
@@ -581,76 +477,84 @@ function clearIncidenceCir() {
     }
 }
 
-var markers ;
+
 var riskBrk;
  /** Plot the incidents on the map. */           
 function plotIncidence(data, index) {
     
-    markers = [];
-    riskBrk = data.risks[index].risk_breakdown;
+    var markers = [];
+    riskBrk = data.risks[index].map_incidents;
     for (i in riskBrk) {
     //populate array if there are risks.
-        if (riskBrk[i].risk > 0) {
+    var riskInJsonFormat = jQuery.parseJSON(riskBrk[i]);
+
+        if (riskInJsonFormat !== undefined) {
             var showIncidence;
-            var event = new google.maps.LatLng(riskBrk[i].lat, riskBrk[i].lng);
+            var latLong = new google.maps.LatLng(riskInJsonFormat.geometry.coordinates[0], riskInJsonFormat.geometry.coordinates[1]);
             //== Adding clusters start
-            var marker1 = new google.maps.Marker({
-                position: event
+            var incident = new google.maps.Marker({
+                position: latLong
               });
-              markers.push(marker1);
-
-
-            var format = "<table>"
-            //create info window, only if the incidents are defined.
-            if (data.risks[index].risk_incidents[i].incidents[0] != undefined) {
-                var when = new Date(data.risks[index].risk_incidents[i].incidents[0].incident_time * 1000);
-                var reported = new Date(data.risks[index].risk_incidents[i].incidents[0].created_at * 1000);
+              //TODO: check if already added.(Looks like backend sending dublicate values).
+             if(!alreadyAddedIncident(markers, incident)) {
+               markers.push(incident);
+             }
+           var format = "<table>"
+                var when = new Date(riskInJsonFormat.incident_time * 1000);
+                var reported = new Date(riskInJsonFormat.created_at * 1000);
                 showIncidence = new google.maps.InfoWindow({
-                    content: format + "<tr><td>Incident type</td><td>" + data.risks[index].risk_incidents[i].incidents[0].title + "</td></tr>" +
-                            "<tr><td>Occurred on </td><td>" + when.getDate() + "/" + (when.getMonth() + 1) + "/" + when.getFullYear() + "(DD/MM/YYYY)</td></tr>" +
-                            "<tr><td style='width:130px' >Reported on </td><td>" + reported.getDate() + "/" + (reported.getMonth() + 1) + "/" + reported.getFullYear() + "(DD/MM/YYYY)</td></tr></table>",
+                    content: format + "<tr><td>Incident type:</td><td>" + riskInJsonFormat.title + "</td></tr>" +
+                            "<tr><td>Occurred on: </td><td>" + when.getDate() + "/" + (when.getMonth() + 1) + "/" + when.getFullYear() + "(DD/MM/YYYY)</td></tr>"+
+                            "<tr><td>Description: </td><td>" +((riskInJsonFormat.description != undefined && riskInJsonFormat.description.trim().length > 0) ? riskInJsonFormat.description:"NA" ) + "</td></tr></table>",
                     maxWidth: 400,
-                    maxHeight: 300
+                    maxHeight: 400
                 });                                                 
-                addIncidentPoints(marker1, showIncidence);
-            } else {
-                showIncidence = new google.maps.InfoWindow({
-                    content: "No data available",
-                    maxWidth: 200
-                });                               
-                addIncidentPoints(marker1, showIncidence);
-            }
-            listOfIncidence.push(showIncidence);
+                addIncidentPoints(incident, showIncidence);
+               listOfIncidence.push(showIncidence);
         }
     }
     //marker icon as red.
-    plotClusterOnMap()
+    plotClusterOnMap(markers);
+    
     
 }
 
-function plotClusterOnMap() {
-    var mcOptions = {styles: [{
+function alreadyAddedIncident(markers, incident) {
+    var found = false;
+    var count = 0;
+    for(count=0; count < markers.length; ++count) {
+        if(markers[count].position.k === incident.position.k && 
+              markers[count].position.B === incident.position.B) {
+        found = true;
+        break;
+      }
+    }
+    return found;
+}
+function plotClusterOnMap(markers) {
+  var mcOptions = {styles: [{
         height: 53,
         url: "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m3.png",
         width: 53
         }]};
+           
     markerCluster = new MarkerClusterer(safeRouteMap, markers, mcOptions);
-    if(riskBrk != undefined) {
-      $("#numIncidents").text("Incidents reported: "+riskBrk.length);
-      console.log("Number of incidence " + riskBrk.length);
-    }
+      $("#numIncidents").text("Incidents reported: "+markers.length);
+      console.log("Number of incidence " + markers.length);
+    
 }
 /**
 * Add incident point with details window.
 */        
- function addIncidentPoints(marker, infoWindow) {
+ function addIncidentPoints(incident, infoWindow) {
 
     //add a click event to the circle
-    google.maps.event.addListener(marker, 'click', function(ev) {
+    google.maps.event.addListener(incident, 'click', function(ev) {
         //call  the infoWindow
         infoWindow.setPosition(ev.latLng);
         infoWindow.open(safeRouteMap);
     });
+
     
 }
 
