@@ -501,10 +501,11 @@ function clearIncidenceCir() {
 
 
 var riskBrk;
+var markers;
  /** Plot the incidents on the map. */           
 function plotIncidence(data, index) {
     
-    var markers = [];
+    markers = [];
     riskBrk = data.risks[index].map_incidents;
     for (i in riskBrk) {
     //populate array if there are risks.
@@ -536,7 +537,7 @@ function plotIncidence(data, index) {
         }
     }
     //marker icon as red.
-    plotClusterOnMap(markers);
+    plotClusterOnMap();
     
     
 }
@@ -553,7 +554,7 @@ function alreadyAddedIncident(markers, incident) {
     }
     return found;
 }
-function plotClusterOnMap(markers) {
+function plotClusterOnMap() {
   var mcOptions = {styles: [{
         height: 53,
         url: "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/images/m3.png",
