@@ -54,6 +54,8 @@ function reverseGeoCode(lat, lng) {
 /****************************************************************************************************************************************************/
 /** 1. Report an unsafe location. */
 var currentPosition,autocomplete;
+var TIME_OUT=6000;
+var TIME_OUT_MSG= "Connection failure, try again";
 var prevMarker, currentDT;
 //Fallback location if geo is disabled.
 var googleLocation = new google.maps.LatLng(37.421942, -122.08450);
@@ -64,7 +66,7 @@ var googleLocation = new google.maps.LatLng(37.421942, -122.08450);
 * Submit a report.
 */            
 function submitReport(json) {                
-     $.ajax({
+   /*  $.ajax({
         url: '/v0/incidents',
         type: 'POST',
         data: json,
@@ -78,10 +80,31 @@ function submitReport(json) {
              console.log(jqXHR.responseText);
             }
       });
+      */
+     $.ajax({
+        url: '/v0/incidents',
+        type: 'POST',
+        data: json,
+        contentType: "application/json;",
+        timeout: TIME_OUT,
+        success: function(response) {
+            $("#repStatus").text("Submitted successfully");
+             $("#repStatus").css("color","green");
+            console.log("Submitted")
+        },
+        error: function(objRequest, errortype) {
+            if (errortype == 'timeout') {
+              showErrorMsg(TIME_OUT_MSG);
+            }
+        }
+    });
 }   
 
 
-
+function showErrorMsg(msg) {
+    $("#repStatus").text(msg); 
+    $("#repStatus").css("color","red");
+}
 
 /**  Initializing report page. */
 $('#report_form').live('pageinit', function() {
@@ -94,8 +117,7 @@ $('#report_form').live('pageinit', function() {
     $("#submit-button").on("click", function() {
         $("#repStatus").text("");
           if($("#reportLoc").val().trim().length === 0) {
-             $("#repStatus").text("Missing location"); 
-             $("#repStatus").css("color","red");
+            showErrorMsg("Missing location");
           }
           var revLatLng;
           geoCode($("#reportLoc").val(), function(latLng) {
@@ -285,7 +307,7 @@ function plotSafeRoute(origin, targetDestination) {
                     url: route,
                     dataType: 'json',
                     type: 'GET',
-                    timeout: 6000,
+                    timeout: TIME_OUT,
                     success: function(mapData){
                        $.mobile.hidePageLoadingMsg(); 
                       if(mapData.status !== "ZERO_RESULTS") {
@@ -300,7 +322,7 @@ function plotSafeRoute(origin, targetDestination) {
                     error: function(objRequest, errortype) {
                          $.mobile.hidePageLoadingMsg(); 
                         if (errortype == 'timeout') {
-                           $("#invAddr").text("Connection failure");
+                           $("#invAddr").text(TIME_OUT_MSG);
                         }
                     }
                 });
