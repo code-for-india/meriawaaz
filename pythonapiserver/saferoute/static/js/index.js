@@ -552,7 +552,7 @@ function alreadyAddedIncident(markers, incident) {
         break;
       }
     }
-    return found;
+    return found; 
 }
 function plotClusterOnMap() {
   var mcOptions = {styles: [{
