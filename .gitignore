@@ -32,3 +32,4 @@ play-2.2.2/
 /pythonapiserver/myenvironment
 *.pyc
 settings.py
+*/settings.py
