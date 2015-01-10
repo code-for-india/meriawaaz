@@ -22,7 +22,7 @@
     -->
     <feature name="http://api.phonegap.com/1.0/device" />
 
-    <content src="http://162.222.176.18/" />
+    <content src="http://saferouteapp.com/" />
 
 
     <!--
